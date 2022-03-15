@@ -192,7 +192,7 @@
 
 //   <h> MIIM (Management Data Interface)
 //     <o> ENET_MDC Pin <0=>P1_16 <1=>P2_8
-#define RTE_ENET_MDI_MDC_PORT_ID        1
+#define RTE_ENET_MDI_MDC_PORT_ID        0
 #if    (RTE_ENET_MDI_MDC_PORT_ID == 0)
 #define RTE_ENET_MDI_MDC_PORT           1
 #define RTE_ENET_MDI_MDC_PIN            16
@@ -205,7 +205,7 @@
 #error "Invalid ENET_MDC Pin Configuration!"
 #endif
 //     <o> ENET_MDIO Pin <0=>P1_17 <1=>P2_9
-#define RTE_ENET_MDI_MDIO_PORT_ID       1
+#define RTE_ENET_MDI_MDIO_PORT_ID       0
 #if    (RTE_ENET_MDI_MDIO_PORT_ID == 0)
 #define RTE_ENET_MDI_MDIO_PORT          1
 #define RTE_ENET_MDI_MDIO_PIN           17

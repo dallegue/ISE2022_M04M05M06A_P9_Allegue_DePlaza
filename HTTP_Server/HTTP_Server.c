@@ -12,9 +12,9 @@
 
 #include "Board_GLCD.h"
 #include "GLCD_Config.h"
-#include "Board_LED.h"
 #include "Board_Buttons.h"
-#include "Board_ADC.h"
+#include "adc.h"
+#include "lcd.h"
 
 extern GLCD_FONT GLCD_Font_6x8;
 extern GLCD_FONT GLCD_Font_16x24;
@@ -25,6 +25,7 @@ char lcd_text[2][20+1];
 
 static void BlinkLed (void const *arg);
 static void Display (void const *arg);
+int32_t LED_SetOut (uint32_t val);
 
 osThreadDef(BlinkLed, osPriorityNormal, 1, 0);
 osThreadDef(Display, osPriorityNormal, 1, 0);
@@ -91,8 +92,7 @@ static void Display (void const *arg) {
   Thread 'BlinkLed': Blink the LEDs on an eval board
  *---------------------------------------------------------------------------*/
 static void BlinkLed (void const *arg) {
-  const uint8_t led_val[16] = { 0x48,0x88,0x84,0x44,0x42,0x22,0x21,0x11,
-                                0x12,0x0A,0x0C,0x14,0x18,0x28,0x30,0x50 };
+  const uint8_t led_val[5] = { 0x00, 0x01, 0x02, 0x04, 0x08};
   int cnt = 0;
 
   LEDrun = true;
@@ -109,17 +109,96 @@ static void BlinkLed (void const *arg) {
 }
 
 /*----------------------------------------------------------------------------
+  mbedApp board support
+ *---------------------------------------------------------------------------*/
+
+#include "PIN_LPC17xx.h"
+#include "GPIO_LPC17xx.h"
+
+#define LED_COUNT (4)
+
+/* LED pins:
+   - LED1: P1_18 = GPIO1[18]
+   - LED2: P1_20 = GPIO1[20]
+   - LED3: P1_21  = GPIO1[21]
+   - LED4: P1_23  = GPIO1[23] */
+
+const PIN LED_PIN[] = {
+  {1, 18},
+  {1, 20},
+  {1, 21},
+  {1, 23},
+};
+
+
+int32_t LED_On (uint32_t num) {
+  int32_t retCode = 0;
+
+  if (num < LED_COUNT) {
+    GPIO_PinWrite (LED_PIN[num].Portnum, LED_PIN[num].Pinnum, 1);
+  }
+  else {
+    retCode = -1;
+  }
+
+  return retCode;
+}
+
+int32_t LED_Off (uint32_t num) {
+  int32_t retCode = 0;
+
+  if (num < LED_COUNT) {
+    GPIO_PinWrite (LED_PIN[num].Portnum, LED_PIN[num].Pinnum, 0);
+  }
+  else {
+    retCode = -1;
+  }
+
+  return retCode;
+}
+
+int32_t LED_SetOut (uint32_t val) {
+  uint32_t n;
+
+  for (n = 0; n < LED_COUNT; n++) {
+    if (val & (1 << n)) LED_On (n);
+    else                LED_Off(n);
+  }
+
+  return 0;
+}
+
+static int32_t LED_Initialize (void) {
+  uint32_t n;
+
+  /* Enable GPIO clock */
+  GPIO_PortClock     (1);
+
+  /* Configure pins: Output Mode with Pull-down resistors */
+  for (n = 0; n < LED_COUNT; n++) {
+    PIN_Configure (LED_PIN[n].Portnum, LED_PIN[n].Pinnum, PIN_FUNC_0, PIN_PINMODE_PULLDOWN, PIN_PINMODE_NORMAL);
+    GPIO_SetDir   (LED_PIN[n].Portnum, LED_PIN[n].Pinnum, GPIO_DIR_OUTPUT);
+    GPIO_PinWrite (LED_PIN[n].Portnum, LED_PIN[n].Pinnum, 0);
+  }
+
+  return 0;
+}
+
+/*----------------------------------------------------------------------------
   Main Thread 'main': Run Network
  *---------------------------------------------------------------------------*/
 int main (void) {
   LED_Initialize     ();
-  Buttons_Initialize ();
+  //Buttons_Initialize ();
   ADC_Initialize     ();
   net_initialize     ();
 
   osThreadCreate (osThread(BlinkLed), NULL);
-  osThreadCreate (osThread(Display), NULL);
-
+  //osThreadCreate (osThread(Display), NULL);
+  
+  /* Init lcd */
+  LCD_SPI_startup();
+  
   while(1) {
     net_main ();
     osThreadYield ();

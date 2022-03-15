@@ -12,6 +12,7 @@
 #include "rl_net.h"
 #include "rl_net_lib.h"
 #include "Board_LED.h"
+#include "lcd.h"
 
 // http_server.c
 extern uint16_t AD_in (uint32_t ch);
@@ -148,11 +149,15 @@ void cgi_process_data (uint8_t code, const char *data, uint32_t len) {
       else if (strncmp (var, "lcd1=", 5) == 0) {
         // LCD Module line 1 text
         strcpy (lcd_text[0], var+5);
+        clear_linea_buffer(LINEA_1);
+        print_linea(LINEA_1, lcd_text[0]);
         LCDupdate = true;
       }
       else if (strncmp (var, "lcd2=", 5) == 0) {
         // LCD Module line 2 text
         strcpy (lcd_text[1], var+5);
+        clear_linea_buffer(LINEA_2);
+        print_linea(LINEA_2, lcd_text[1]);
         LCDupdate = true;
       }
     }
