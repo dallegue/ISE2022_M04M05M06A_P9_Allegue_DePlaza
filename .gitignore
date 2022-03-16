@@ -1,7 +1,6 @@
 *.uvguix
+*.uvguix.*
 DebugConfig/
 Output/
 Listings/
-HTTP_Server.uvguix.d.allegue
-HTTP_Server.uvguix.g.deplaza
 Objects/

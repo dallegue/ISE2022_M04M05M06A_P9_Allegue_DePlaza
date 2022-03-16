@@ -67,9 +67,9 @@ static void RTC_startup(void)
   // Current time is 8:00:00PM, 2009-04-24
   RTC_SetTime (LPC_RTC, RTC_TIMETYPE_SECOND, 0);
   RTC_SetTime (LPC_RTC, RTC_TIMETYPE_MINUTE, 0);
-  RTC_SetTime (LPC_RTC, RTC_TIMETYPE_HOUR, 20);
-  RTC_SetTime (LPC_RTC, RTC_TIMETYPE_MONTH, 4);
-  RTC_SetTime (LPC_RTC, RTC_TIMETYPE_YEAR, 2009);
+  RTC_SetTime (LPC_RTC, RTC_TIMETYPE_HOUR, 16);
+  RTC_SetTime (LPC_RTC, RTC_TIMETYPE_MONTH, 3);
+  RTC_SetTime (LPC_RTC, RTC_TIMETYPE_YEAR, 2022);
   RTC_SetTime (LPC_RTC, RTC_TIMETYPE_DAYOFMONTH, 24);
 
   /* Set ALARM time for second */
@@ -97,8 +97,9 @@ int main (void)
     // Get and print current time
     RTC_GetFullTime (LPC_RTC, &RTCFullTime);
     sprintf(lineaHora, "%02d:%02d:%02d", RTCFullTime.HOUR, RTCFullTime.MIN, RTCFullTime.SEC);
-    sprintf(lineaFecha, "%02d:%02d:%02d", RTCFullTime.DOM, RTCFullTime.MONTH, RTCFullTime.YEAR);
+    sprintf(lineaFecha, "%02d/%02d/%02d", RTCFullTime.DOM, RTCFullTime.MONTH, RTCFullTime.YEAR);
     print_lineas(lineaHora, lineaFecha);
-    osDelay(1000);
+    osDelay(100);
+    osThreadYield ();
   }
 }
