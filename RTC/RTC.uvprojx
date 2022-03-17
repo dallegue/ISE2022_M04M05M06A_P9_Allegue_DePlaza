@@ -438,6 +438,11 @@
               <FileType>5</FileType>
               <FilePath>.\lcd.h</FilePath>
             </File>
+            <File>
+              <FileName>RTC.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\RTC.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
