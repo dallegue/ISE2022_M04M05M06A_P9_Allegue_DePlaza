@@ -389,41 +389,6 @@
               <FilePath>.\RTC.c</FilePath>
             </File>
             <File>
-              <FileName>lpc17xx_rtc.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\lpc17xx_rtc.c</FilePath>
-            </File>
-            <File>
-              <FileName>lpc17xx_rtc.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\lpc17xx_rtc.h</FilePath>
-            </File>
-            <File>
-              <FileName>lpc_types.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\lpc_types.h</FilePath>
-            </File>
-            <File>
-              <FileName>lpc17xx_clkpwr.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\lpc17xx_clkpwr.h</FilePath>
-            </File>
-            <File>
-              <FileName>lpc17xx_libcfg_default.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\lpc17xx_libcfg_default.h</FilePath>
-            </File>
-            <File>
-              <FileName>lpc17xx_clkpwr.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\lpc17xx_clkpwr.c</FilePath>
-            </File>
-            <File>
-              <FileName>lpc17xx_libcfg_default.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\lpc17xx_libcfg_default.c</FilePath>
-            </File>
-            <File>
               <FileName>Arial12x12.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\Arial12x12.h</FilePath>

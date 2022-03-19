@@ -47,6 +47,30 @@
 #define RTC_DAYOFYEAR_MAX	366 /*!< Maximum value of day of year*/
 #define RTC_YEAR_MAX		4095 /*!< Maximum value of year*/
 
+/** The RTC power/clock control bit */
+#define	 CLKPWR_PCONP_PCRTC  	((uint32_t)(1<<9))
+
+/** Power Control for Peripherals bit mask */
+#define CLKPWR_PCONP_BITMASK	0xEFEFF7DE
+
+/** Clock reset */
+#define RTC_CCR_CTCRST			((1<<1))
+
+/** CCR register mask */
+#define RTC_CCR_BITMASK			((0x00000013))
+
+/** Clock enable */
+#define RTC_CCR_CLKEN			((1<<0))
+
+/** Calibration counter enable */
+#define RTC_CCR_CCALEN			((1<<4))
+
+/** Counter Increment Interrupt bit for minute */
+#define RTC_CIIR_IMMIN			((1<<1))
+
+/** Bit inform the source interrupt is counter increment*/
+#define RTC_IRL_RTCCIF			((1<<0))
+
 /* Public variables ----------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
 
@@ -79,12 +103,12 @@ void RTC_GetFullTime (LPC_RTC_TypeDef *RTCx, RTC_TIME_Type *pFullTime);
 void RTC_IRQHandler(void)
 {
   /* This is increment counter interrupt*/
-  if (RTC_GetIntPending(LPC_RTC, RTC_INT_COUNTER_INCREASE))
+  if (LPC_RTC->ILR & RTC_IRL_RTCCIF)
   {
     parpadear_led = true;
     
     // Clear pending interrupt
-    RTC_ClearIntPending(LPC_RTC, RTC_INT_COUNTER_INCREASE);
+    LPC_RTC->ILR |= RTC_IRL_RTCCIF;
   }
 }
 
@@ -160,61 +184,71 @@ void RTC_GetFullTime (LPC_RTC_TypeDef *RTCx, RTC_TIME_Type *pFullTime)
  * @param[in]	TimeValue Time value to set
  * @return 		None
  **********************************************************************/
-void RTC_SetTime (LPC_RTC_TypeDef *RTCx, uint32_t Timetype, uint32_t TimeValue)
+static void RTC_SetTime (LPC_RTC_TypeDef *RTCx, uint32_t Timetype, uint32_t TimeValue)
 {
 	switch ( Timetype)
 	{
 	case RTC_TIMETYPE_SECOND:
-		CHECK_PARAM(TimeValue <= RTC_SECOND_MAX);
-
 		RTCx->SEC = TimeValue & RTC_SEC_MASK;
 		break;
 
 	case RTC_TIMETYPE_MINUTE:
-		CHECK_PARAM(TimeValue <= RTC_MINUTE_MAX);
-
 		RTCx->MIN = TimeValue & RTC_MIN_MASK;
 		break;
 
 	case RTC_TIMETYPE_HOUR:
-		CHECK_PARAM(TimeValue <= RTC_HOUR_MAX);
-
 		RTCx->HOUR = TimeValue & RTC_HOUR_MASK;
 		break;
 
 	case RTC_TIMETYPE_DAYOFWEEK:
-		CHECK_PARAM(TimeValue <= RTC_DAYOFWEEK_MAX);
-
 		RTCx->DOW = TimeValue & RTC_DOW_MASK;
 		break;
 
 	case RTC_TIMETYPE_DAYOFMONTH:
-		CHECK_PARAM((TimeValue <= RTC_DAYOFMONTH_MAX) \
-				&& (TimeValue >= RTC_DAYOFMONTH_MIN));
-
 		RTCx->DOM = TimeValue & RTC_DOM_MASK;
 		break;
 
 	case RTC_TIMETYPE_DAYOFYEAR:
-		CHECK_PARAM((TimeValue >= RTC_DAYOFYEAR_MIN) \
-				&& (TimeValue <= RTC_DAYOFYEAR_MAX));
-
 		RTCx->DOY = TimeValue & RTC_DOY_MASK;
 		break;
 
 	case RTC_TIMETYPE_MONTH:
-		CHECK_PARAM((TimeValue >= RTC_MONTH_MIN) \
-				&& (TimeValue <= RTC_MONTH_MAX));
-
 		RTCx->MONTH = TimeValue & RTC_MONTH_MASK;
 		break;
 
 	case RTC_TIMETYPE_YEAR:
-		CHECK_PARAM(TimeValue <= RTC_YEAR_MAX);
-
 		RTCx->YEAR = TimeValue & RTC_YEAR_MASK;
 		break;
 	}
+}
+
+/********************************************************************//**
+ * @brief		Initializes the RTC peripheral.
+ * @param[in]	RTCx	RTC peripheral selected, should be LPC_RTC
+ * @return 		None
+ *********************************************************************/
+static void RTC_Init (LPC_RTC_TypeDef *RTCx)
+{
+	/* Set up clock and power for RTC module */
+  LPC_SC->PCONP |= CLKPWR_PCONP_PCRTC & CLKPWR_PCONP_BITMASK;
+
+	// Clear all register to be default
+	RTCx->ILR = 0x00;
+	RTCx->CCR = 0x00;
+	RTCx->CIIR = 0x00;
+	RTCx->AMR = 0xFF;
+	RTCx->CALIBRATION = 0x00;
+}
+
+/*********************************************************************//**
+ * @brief 		Reset clock tick counter in RTC peripheral
+ * @param[in]	RTCx	RTC peripheral selected, should be LPC_RTC
+ * @return 		None
+ **********************************************************************/
+static void RTC_ResetClockTickCounter(LPC_RTC_TypeDef *RTCx)
+{
+	RTCx->CCR |= RTC_CCR_CTCRST;
+	RTCx->CCR &= (~RTC_CCR_CTCRST) & RTC_CCR_BITMASK;
 }
 
 static void RTC_startup(void)
@@ -228,8 +262,8 @@ static void RTC_startup(void)
 
   /* Enable rtc (starts increase the tick counter and second counter register) */
   RTC_ResetClockTickCounter(LPC_RTC);
-  RTC_Cmd(LPC_RTC, ENABLE);
-  RTC_CalibCounterCmd(LPC_RTC, DISABLE);
+  LPC_RTC->CCR |= RTC_CCR_CLKEN;
+  LPC_RTC->CCR |= RTC_CCR_CCALEN;
 
   /* Set current time for RTC */
   // Current time is 8:00:00PM, 2009-04-24
@@ -240,8 +274,8 @@ static void RTC_startup(void)
   RTC_SetTime (LPC_RTC, RTC_TIMETYPE_YEAR, 2022);
   RTC_SetTime (LPC_RTC, RTC_TIMETYPE_DAYOFMONTH, 24);
 
-  /* Set the CIIR for second counter interrupt -> cambiar a cada minuto*/
-  RTC_CntIncrIntConfig (LPC_RTC, RTC_TIMETYPE_MINUTE, ENABLE);
+  /* Set the CIIR for minute counter interrupt */
+  LPC_RTC->CIIR |= RTC_CIIR_IMMIN;
 
   /* Enable RTC interrupt */
   NVIC_EnableIRQ(RTC_IRQn);
