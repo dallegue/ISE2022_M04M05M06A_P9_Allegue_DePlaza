@@ -4,9 +4,21 @@
 /* Includes ------------------------------------------------------------------*/
 
 #include <stdint.h>
+#include <stdbool.h>
+#include "GPIO_LPC17xx.h"
 
 /* Macros ------------------------------------------------------------------- */
+
+#define PORT_LEDS 1
+#define PIN_LED4 23
+#define LED_ON 1
+#define LED_OFF 0
+#define DURACION_PARPADEO_MS 5000
+#define PERIODO_REFRESCO_MS 250
+
 /* Public variables ----------------------------------------------------------*/
+
+extern bool minuto_incrementado;
 
 /** @brief Time structure definitions for easy manipulate the data */
 typedef struct {
@@ -21,6 +33,13 @@ typedef struct {
 } RTC_TIME_Type;
 
 /* Public functions --------------------------------------------------------- */
+
+void RTC_IRQHandler(void);
+void RTC_GetFullTime (RTC_TIME_Type *pFullTime);
+
+/* Se pasa como parametro la hora inicial a configurar */
+void RTC_startup(RTC_TIME_Type *pFullTime);
+
 /* Other -------------------------------------------------------------------- */
 
 #endif
