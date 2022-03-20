@@ -6,10 +6,12 @@
 /* Macros ------------------------------------------------------------------- */
 /* Public variables ----------------------------------------------------------*/
 /* Public functions --------------------------------------------------------- */
-extern int32_t  ADC_Initialize      (void);
-extern int32_t  ADC_StartConversion (void);
-extern int32_t  ADC_ConversionDone  (void);
-extern int32_t  ADC_GetValue        (void);
+int32_t  ADC_Initialize      (void);
+int32_t  ADC_StartConversion (void);
+int32_t  ADC_ConversionDone  (void);
+int32_t  ADC_GetValue        (void);
+uint16_t AD_in (uint32_t ch);
+
 /* Other -------------------------------------------------------------------- */
 
 #endif

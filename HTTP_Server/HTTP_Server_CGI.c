@@ -11,11 +11,11 @@
 #include <string.h>
 #include "rl_net.h"
 #include "rl_net_lib.h"
-#include "Board_LED.h"
 #include "lcd.h"
+#include "adc.h"
+#include "HTTP_Server.h"
 
 // http_server.c
-extern uint16_t AD_in (uint32_t ch);
 extern uint8_t  get_button (void);
 
 // net_sys.c
@@ -29,10 +29,6 @@ extern struct http_cfg  http_config;
 #define tcp_socket      tcp_config.Scb
 #define http_EnAuth     http_config.EnAuth
 #define http_auth_passw http_config.Passw
-
-extern bool LEDrun;
-extern bool LCDupdate;
-extern char lcd_text[2][20+1];
 
 // Local variables.
 static uint8_t P2;

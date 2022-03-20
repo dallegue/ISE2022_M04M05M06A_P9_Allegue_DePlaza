@@ -423,6 +423,11 @@
               <FileType>5</FileType>
               <FilePath>.\lcd.h</FilePath>
             </File>
+            <File>
+              <FileName>HTTP_Server.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\HTTP_Server.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -968,6 +973,11 @@
               <FileName>lcd.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\lcd.h</FilePath>
+            </File>
+            <File>
+              <FileName>HTTP_Server.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\HTTP_Server.h</FilePath>
             </File>
           </Files>
         </Group>

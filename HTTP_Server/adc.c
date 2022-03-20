@@ -13,6 +13,19 @@ const PIN ADC_PIN[] = {
 };
 
 
+
+/// Read analog inputs
+uint16_t AD_in (uint32_t ch) {
+  int32_t val = 0;
+
+  if (ch == 0) {
+    ADC_StartConversion();
+    while (ADC_ConversionDone () < 0);
+    val = ADC_GetValue();
+  }
+  return (val);
+}
+
 /**
   \fn          int32_t ADC_Initialize (void)
   \brief       Initialize Analog-to-Digital Converter

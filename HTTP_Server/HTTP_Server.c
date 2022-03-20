@@ -6,42 +6,56 @@
  * Purpose: HTTP Server example
  *----------------------------------------------------------------------------*/
 
+/* Includes ------------------------------------------------------------------*/
+
 #include <stdio.h>
 #include "cmsis_os.h"                   /* CMSIS RTOS definitions             */
 #include "rl_net.h"                     /* Network definitions                */
 
-#include "Board_GLCD.h"
-#include "GLCD_Config.h"
 #include "Board_Buttons.h"
 #include "adc.h"
 #include "lcd.h"
+#include "HTTP_Server.h"
+#include "PIN_LPC17xx.h"
+#include "GPIO_LPC17xx.h"
 
-extern GLCD_FONT GLCD_Font_6x8;
-extern GLCD_FONT GLCD_Font_16x24;
+/* Macros --------------------------------------------------------------------*/
+
+#define LED_COUNT (4)
+
+/* Public variables ----------------------------------------------------------*/
 
 bool LEDrun;
 bool LCDupdate;
 char lcd_text[2][20+1];
 
+/* Private variables ---------------------------------------------------------*/
+
+/* LED pins:
+   - LED1: P1_18 = GPIO1[18]
+   - LED2: P1_20 = GPIO1[20]
+   - LED3: P1_21  = GPIO1[21]
+   - LED4: P1_23  = GPIO1[23] */
+
+static const PIN LED_PIN[] = {
+  {1, 18},
+  {1, 20},
+  {1, 21},
+  {1, 23},
+};
+
+/* Function prototypes -------------------------------------------------------*/
+
 static void BlinkLed (void const *arg);
-static void Display (void const *arg);
-int32_t LED_SetOut (uint32_t val);
-
 osThreadDef(BlinkLed, osPriorityNormal, 1, 0);
-osThreadDef(Display, osPriorityNormal, 1, 0);
 
-/// Read analog inputs
-uint16_t AD_in (uint32_t ch) {
-  int32_t val = 0;
+static int32_t LED_On (uint32_t num);
+static int32_t LED_Off (uint32_t num);
+static int32_t LED_Initialize (void);
 
-  if (ch == 0) {
-    ADC_StartConversion();
-    while (ADC_ConversionDone () < 0);
-    val = ADC_GetValue();
-  }
-  return (val);
-}
+/* Public functions --------------------------------------------------------- */
 
+/* No se usa */
 /// Read digital inputs
 uint8_t get_button (void) {
   return (Buttons_GetState ());
@@ -58,80 +72,35 @@ void dhcp_client_notify (uint32_t if_num,
   }
 }
 
-/*----------------------------------------------------------------------------
-  Thread 'Display': LCD display handler
- *---------------------------------------------------------------------------*/
-static void Display (void const *arg) {
-  char lcd_buf[20+1];
+int32_t LED_SetOut (uint32_t val) {
+  uint32_t n;
 
-  GLCD_Initialize         ();
-  GLCD_SetBackgroundColor (GLCD_COLOR_BLUE);
-  GLCD_SetForegroundColor (GLCD_COLOR_WHITE);
-  GLCD_ClearScreen        ();
-  GLCD_SetFont            (&GLCD_Font_16x24);
-  GLCD_DrawString         (0, 1*24, "       MDK-MW       ");
-  GLCD_DrawString         (0, 2*24, "HTTP Server example ");
+  for (n = 0; n < LED_COUNT; n++) {
+    if (val & (1 << n)) LED_On (n);
+    else                LED_Off(n);
+  }
 
-  sprintf (lcd_text[0], "");
-  sprintf (lcd_text[1], "Waiting for DHCP");
-  LCDupdate = true;
+  return 0;
+}
 
+int main (void) {
+  LED_Initialize     ();
+  ADC_Initialize     ();
+  net_initialize     ();
+
+  osThreadCreate (osThread(BlinkLed), NULL);
+  
+  LCD_SPI_startup();
+  
   while(1) {
-    if (LCDupdate == true) {
-      sprintf (lcd_buf, "%-20s", lcd_text[0]);
-      GLCD_DrawString (0, 5*24, lcd_buf);
-      sprintf (lcd_buf, "%-20s", lcd_text[1]);
-      GLCD_DrawString (0, 6*24, lcd_buf);
-      LCDupdate = false;
-    }
-    osDelay (250);
+    net_main ();
+    osThreadYield ();
   }
 }
 
-/*----------------------------------------------------------------------------
-  Thread 'BlinkLed': Blink the LEDs on an eval board
- *---------------------------------------------------------------------------*/
-static void BlinkLed (void const *arg) {
-  const uint8_t led_val[5] = { 0x00, 0x01, 0x02, 0x04, 0x08};
-  int cnt = 0;
+/* Private functions -------------------------------------------------------- */
 
-  LEDrun = true;
-  while(1) {
-    // Every 100 ms
-    if (LEDrun == true) {
-      LED_SetOut (led_val[cnt]);
-      if (++cnt >= sizeof(led_val)) {
-        cnt = 0;
-      }
-    }
-    osDelay (100);
-  }
-}
-
-/*----------------------------------------------------------------------------
-  mbedApp board support
- *---------------------------------------------------------------------------*/
-
-#include "PIN_LPC17xx.h"
-#include "GPIO_LPC17xx.h"
-
-#define LED_COUNT (4)
-
-/* LED pins:
-   - LED1: P1_18 = GPIO1[18]
-   - LED2: P1_20 = GPIO1[20]
-   - LED3: P1_21  = GPIO1[21]
-   - LED4: P1_23  = GPIO1[23] */
-
-const PIN LED_PIN[] = {
-  {1, 18},
-  {1, 20},
-  {1, 21},
-  {1, 23},
-};
-
-
-int32_t LED_On (uint32_t num) {
+static int32_t LED_On (uint32_t num) {
   int32_t retCode = 0;
 
   if (num < LED_COUNT) {
@@ -144,7 +113,7 @@ int32_t LED_On (uint32_t num) {
   return retCode;
 }
 
-int32_t LED_Off (uint32_t num) {
+static int32_t LED_Off (uint32_t num) {
   int32_t retCode = 0;
 
   if (num < LED_COUNT) {
@@ -155,17 +124,6 @@ int32_t LED_Off (uint32_t num) {
   }
 
   return retCode;
-}
-
-int32_t LED_SetOut (uint32_t val) {
-  uint32_t n;
-
-  for (n = 0; n < LED_COUNT; n++) {
-    if (val & (1 << n)) LED_On (n);
-    else                LED_Off(n);
-  }
-
-  return 0;
 }
 
 static int32_t LED_Initialize (void) {
@@ -184,23 +142,20 @@ static int32_t LED_Initialize (void) {
   return 0;
 }
 
-/*----------------------------------------------------------------------------
-  Main Thread 'main': Run Network
- *---------------------------------------------------------------------------*/
-int main (void) {
-  LED_Initialize     ();
-  //Buttons_Initialize ();
-  ADC_Initialize     ();
-  net_initialize     ();
+/* Thread 'BlinkLed': Blink the LEDs on an eval board */
+static void BlinkLed (void const *arg) {
+  const uint8_t led_val[5] = { 0x00, 0x01, 0x02, 0x04, 0x08};
+  int cnt = 0;
 
-  osThreadCreate (osThread(BlinkLed), NULL);
-  //osThreadCreate (osThread(Display), NULL);
-  
-  /* Init lcd */
-  LCD_SPI_startup();
-  
+  LEDrun = true;
   while(1) {
-    net_main ();
-    osThreadYield ();
+    // Every 100 ms
+    if (LEDrun == true) {
+      LED_SetOut (led_val[cnt]);
+      if (++cnt >= sizeof(led_val)) {
+        cnt = 0;
+      }
+    }
+    osDelay (100);
   }
 }
