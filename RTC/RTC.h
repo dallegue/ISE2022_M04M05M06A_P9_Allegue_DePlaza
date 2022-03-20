@@ -5,20 +5,13 @@
 
 #include <stdint.h>
 #include <stdbool.h>
-#include "GPIO_LPC17xx.h"
 
 /* Macros ------------------------------------------------------------------- */
 
-#define PORT_LEDS 1
-#define PIN_LED4 23
-#define LED_ON 1
-#define LED_OFF 0
-#define DURACION_PARPADEO_MS 5000
-#define PERIODO_REFRESCO_MS 250
+/** Bit inform the source interrupt is counter increment*/
+#define RTC_IRL_RTCCIF			((1<<0))
 
 /* Public variables ----------------------------------------------------------*/
-
-extern bool minuto_incrementado;
 
 /** @brief Time structure definitions for easy manipulate the data */
 typedef struct {
@@ -36,6 +29,7 @@ typedef struct {
 
 void RTC_IRQHandler(void);
 void RTC_GetFullTime (RTC_TIME_Type *pFullTime);
+void RTC_SetFullTime (RTC_TIME_Type *pFullTime);
 
 /* Se pasa como parametro la hora inicial a configurar */
 void RTC_startup(RTC_TIME_Type *pFullTime);

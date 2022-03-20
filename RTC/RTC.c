@@ -2,6 +2,7 @@
 
 #include <stdint.h>
 #include "RTC.h"
+#include "LPC17xx.h"
 
 /* Macros --------------------------------------------------------------------*/
 
@@ -43,13 +44,7 @@
 /** Counter Increment Interrupt bit for minute */
 #define RTC_CIIR_IMMIN			((1<<1))
 
-/** Bit inform the source interrupt is counter increment*/
-#define RTC_IRL_RTCCIF			((1<<0))
-
 /* Public variables ----------------------------------------------------------*/
-
-bool minuto_incrementado = false;
-
 /* Private variables ---------------------------------------------------------*/
 
 /** @brief RTC time type option */
@@ -68,23 +63,9 @@ typedef enum {
 
 static void RTC_ResetClockTickCounter(void);
 static void RTC_Init (void);
-static void RTC_SetTime (uint32_t Timetype, uint32_t TimeValue);
 
 
 /* Public functions --------------------------------------------------------- */
-
-/* ISR */
-void RTC_IRQHandler(void)
-{
-  /* This is increment counter interrupt*/
-  if (LPC_RTC->ILR & RTC_IRL_RTCCIF)
-  {
-    minuto_incrementado = true;
-    
-    // Clear pending interrupt
-    LPC_RTC->ILR |= RTC_IRL_RTCCIF;
-  }
-}
 
 /*********************************************************************//**
  * @brief 		Get full of time in RTC peripheral
@@ -105,6 +86,21 @@ void RTC_GetFullTime (RTC_TIME_Type *pFullTime)
 	pFullTime->YEAR = LPC_RTC->YEAR & RTC_YEAR_MASK;
 }
 
+/*********************************************************************//**
+ * @brief 		Set current time value for each time type in RTC peripheral
+ * @param[in]	pFullTime Full time value to set
+ * @return 		None
+ **********************************************************************/
+void RTC_SetFullTime (RTC_TIME_Type *pFullTime)
+{
+		LPC_RTC->SEC = pFullTime->SEC & RTC_SEC_MASK;
+		LPC_RTC->MIN = pFullTime->MIN & RTC_MIN_MASK;
+		LPC_RTC->HOUR = pFullTime->HOUR & RTC_HOUR_MASK;
+		LPC_RTC->DOM = pFullTime->DOM & RTC_DOM_MASK;
+		LPC_RTC->MONTH = pFullTime->MONTH & RTC_MONTH_MASK;
+		LPC_RTC->YEAR = pFullTime->YEAR & RTC_YEAR_MASK;
+}
+
 void RTC_startup(RTC_TIME_Type *pFullTime)
 {
   /* RTC Block section ------------------------------------------------------ */
@@ -120,78 +116,16 @@ void RTC_startup(RTC_TIME_Type *pFullTime)
   LPC_RTC->CCR |= RTC_CCR_CCALEN;
 
   /* Set current time for RTC */
-  // Current time is 8:00:00PM, 2009-04-24
-  RTC_SetTime (RTC_TIMETYPE_SECOND, pFullTime->SEC);
-  RTC_SetTime (RTC_TIMETYPE_MINUTE, pFullTime->MIN);
-  RTC_SetTime (RTC_TIMETYPE_HOUR, pFullTime->HOUR);
-  RTC_SetTime (RTC_TIMETYPE_MONTH, pFullTime->MONTH);
-  RTC_SetTime (RTC_TIMETYPE_YEAR, pFullTime->YEAR);
-  RTC_SetTime (RTC_TIMETYPE_DAYOFMONTH, pFullTime->DOM);
+  RTC_SetFullTime (pFullTime);
 
   /* Set the CIIR for minute counter interrupt */
   LPC_RTC->CIIR |= RTC_CIIR_IMMIN;
 
   /* Enable RTC interrupt */
   NVIC_EnableIRQ(RTC_IRQn);
-  
-  /* Configurar led para parpadeo */
-  GPIO_SetDir (PORT_LEDS, PIN_LED4, GPIO_DIR_OUTPUT);
 }
 
 /* Private functions -------------------------------------------------------- */
-
-/*********************************************************************//**
- * @brief 		Set current time value for each time type in RTC peripheral
- * @param[in]	RTCx	RTC peripheral selected, should be LPC_RTC
- * @param[in]	Timetype: Time Type, should be:
- * 				- RTC_TIMETYPE_SECOND
- * 				- RTC_TIMETYPE_MINUTE
- * 				- RTC_TIMETYPE_HOUR
- * 				- RTC_TIMETYPE_DAYOFWEEK
- * 				- RTC_TIMETYPE_DAYOFMONTH
- * 				- RTC_TIMETYPE_DAYOFYEAR
- * 				- RTC_TIMETYPE_MONTH
- * 				- RTC_TIMETYPE_YEAR
- * @param[in]	TimeValue Time value to set
- * @return 		None
- **********************************************************************/
-static void RTC_SetTime (uint32_t Timetype, uint32_t TimeValue)
-{
-	switch ( Timetype)
-	{
-	case RTC_TIMETYPE_SECOND:
-		LPC_RTC->SEC = TimeValue & RTC_SEC_MASK;
-		break;
-
-	case RTC_TIMETYPE_MINUTE:
-		LPC_RTC->MIN = TimeValue & RTC_MIN_MASK;
-		break;
-
-	case RTC_TIMETYPE_HOUR:
-		LPC_RTC->HOUR = TimeValue & RTC_HOUR_MASK;
-		break;
-
-	case RTC_TIMETYPE_DAYOFWEEK:
-		LPC_RTC->DOW = TimeValue & RTC_DOW_MASK;
-		break;
-
-	case RTC_TIMETYPE_DAYOFMONTH:
-		LPC_RTC->DOM = TimeValue & RTC_DOM_MASK;
-		break;
-
-	case RTC_TIMETYPE_DAYOFYEAR:
-		LPC_RTC->DOY = TimeValue & RTC_DOY_MASK;
-		break;
-
-	case RTC_TIMETYPE_MONTH:
-		LPC_RTC->MONTH = TimeValue & RTC_MONTH_MASK;
-		break;
-
-	case RTC_TIMETYPE_YEAR:
-		LPC_RTC->YEAR = TimeValue & RTC_YEAR_MASK;
-		break;
-	}
-}
 
 /********************************************************************//**
  * @brief		Initializes the RTC peripheral.
