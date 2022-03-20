@@ -548,6 +548,11 @@
               <FileType>9</FileType>
               <FilePath>.\Web\pabb.gif</FilePath>
             </File>
+            <File>
+              <FileName>hora.cgi</FileName>
+              <FileType>9</FileType>
+              <FilePath>.\Web\hora.cgi</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -1118,6 +1123,11 @@
               <FileName>pabb.gif</FileName>
               <FileType>9</FileType>
               <FilePath>.\Web\pabb.gif</FilePath>
+            </File>
+            <File>
+              <FileName>hora.cgi</FileName>
+              <FileType>9</FileType>
+              <FilePath>.\Web\hora.cgi</FilePath>
             </File>
           </Files>
         </Group>

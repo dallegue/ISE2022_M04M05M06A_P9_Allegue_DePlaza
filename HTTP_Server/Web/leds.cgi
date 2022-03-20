@@ -27,15 +27,11 @@ c b c <option %s>Browser</option><option %s>Running Lights</option></select></td
 t <tr><td><img src=pabb.gif>LED diode ports [7..0]:</td>
 t <td><table><tr valign="middle">
 # Here begin the 'checkbox' definitions
-#c b 7 <td><input type=checkbox name=led7 OnClick="submit();" %s>7</td>
-#c b 6 <td><input type=checkbox name=led6 OnClick="submit();" %s>6</td>
-#c b 5 <td><input type=checkbox name=led5 OnClick="submit();" %s>5</td>
-#c b 4 <td><input type=checkbox name=led4 OnClick="submit();" %s>4</td>
 t <td width="5%"></td>
-c b 3 <td><input type=checkbox name=led3 OnClick="submit();" %s>3</td>
-c b 2 <td><input type=checkbox name=led2 OnClick="submit();" %s>2</td>
-c b 1 <td><input type=checkbox name=led1 OnClick="submit();" %s>1</td>
-c b 0 <td><input type=checkbox name=led0 OnClick="submit();" %s>0</td>
+c b 3 <td><input type=checkbox name=led3 OnClick="submit();" %s>4</td>
+c b 2 <td><input type=checkbox name=led2 OnClick="submit();" %s>3</td>
+c b 1 <td><input type=checkbox name=led1 OnClick="submit();" %s>2</td>
+c b 0 <td><input type=checkbox name=led0 OnClick="submit();" %s>1</td>
 t </font></table></td></tr>
 t <tr><td><img src=pabb.gif>All LED diodes On or OFF</td>
 t <td><input type=button value="&nbsp;&nbsp;ON&nbsp;&nbsp;&nbsp;" onclick="AllSW(true)">

@@ -14,6 +14,7 @@
 #include "lcd.h"
 #include "adc.h"
 #include "HTTP_Server.h"
+#include "thread_hora.h"
 
 // http_server.c
 extern uint8_t  get_button (void);
@@ -91,17 +92,21 @@ void cgi_process_data (uint8_t code, const char *data, uint32_t len) {
 
   P2 = 0;
   LEDrun = true;
+  
   if (len == 0) {
     // No data or all items (radio, checkbox) are off
     LED_SetOut (P2);
     return;
   }
+  
   passw[0] = 1;
   do {
     // Parse all parameters
     data = http_get_env_var (data, var, sizeof (var));
-    if (var[0] != 0) {
-      // First character is non-null, string exists
+    
+    if (var[0] != 0) { /* First character is non-null, string exists */
+      
+      /* leds */
       if (strcmp (var, "led0=on") == 0) {
         P2 |= 0x01;
       }
@@ -114,21 +119,11 @@ void cgi_process_data (uint8_t code, const char *data, uint32_t len) {
       else if (strcmp (var, "led3=on") == 0) {
         P2 |= 0x08;
       }
-      else if (strcmp (var, "led4=on") == 0) {
-        P2 |= 0x10;
-      }
-      else if (strcmp (var, "led5=on") == 0) {
-        P2 |= 0x20;
-      }
-      else if (strcmp (var, "led6=on") == 0) {
-        P2 |= 0x40;
-      }
-      else if (strcmp (var, "led7=on") == 0) {
-        P2 |= 0x80;
-      }
       else if (strcmp (var, "ctrl=Browser") == 0) {
         LEDrun = false;
       }
+      
+      /* password */
       else if ((strncmp (var, "pw0=", 4) == 0) ||
                (strncmp (var, "pw2=", 4) == 0)) {
         // Change password, retyped password
@@ -142,22 +137,23 @@ void cgi_process_data (uint8_t code, const char *data, uint32_t len) {
           }
         }
       }
+      
+      /* lcd */
       else if (strncmp (var, "lcd1=", 5) == 0) {
         // LCD Module line 1 text
-        strcpy (lcd_text[0], var+5);
+        strcpy (lcd_text[0], var+5); /* +5 porque copia lo que viene después de lcd1= */
         clear_linea_buffer(LINEA_1);
         print_linea(LINEA_1, lcd_text[0]);
-        LCDupdate = true;
       }
       else if (strncmp (var, "lcd2=", 5) == 0) {
         // LCD Module line 2 text
-        strcpy (lcd_text[1], var+5);
+        strcpy (lcd_text[1], var+5); /* +5 porque copia lo que viene después de lcd2= */
         clear_linea_buffer(LINEA_2);
         print_linea(LINEA_2, lcd_text[1]);
-        LCDupdate = true;
       }
     }
   } while (data);
+  
   LED_SetOut (P2);
 }
 
@@ -207,7 +203,7 @@ uint32_t cgi_script (const char *env, char *buf, uint32_t buflen, uint32_t *pcgi
       }
       // LED CheckBoxes
       id = env[2] - '0';
-      if (id > 7) {
+      if (id > 3) {
         id = 0;
       }
       id = 1 << id;
@@ -283,14 +279,18 @@ uint32_t cgi_script (const char *env, char *buf, uint32_t buflen, uint32_t *pcgi
 
     case 'f':
       // LCD Module control from 'lcd.cgi'
+  
+      /* quitar control de lcd y leds a thread_hora */
+      pagina_hora_seleccionada = false;
+        
       switch (env[2]) {
-        case '1':
-          len = sprintf (buf, &env[4], lcd_text[0]);
-          break;
-        case '2':
-          len = sprintf (buf, &env[4], lcd_text[1]);
-          break;
-      }
+          case '1':
+            len = sprintf (buf, &env[4], lcd_text[0]);
+            break;
+          case '2':
+            len = sprintf (buf, &env[4], lcd_text[1]);
+            break;
+        }
       break;
 
     case 'g':
@@ -306,6 +306,22 @@ uint32_t cgi_script (const char *env, char *buf, uint32_t buflen, uint32_t *pcgi
         case '3':
           adv = (adv * 100) / 4096;
           len = sprintf (buf, &env[4], adv);
+          break;
+      }
+      break;
+      
+    /* pagina hora */
+    case 'h':
+    
+      /* dar control de lcd y leds a thread_hora */
+      pagina_hora_seleccionada = true;
+      
+      switch (env[2]) {
+        case '1':
+          len = sprintf (buf, &env[4], lineaHora);
+          break;
+        case '2':
+          len = sprintf (buf, &env[4], lineaFecha);
           break;
       }
       break;

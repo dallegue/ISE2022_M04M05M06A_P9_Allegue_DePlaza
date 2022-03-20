@@ -9,7 +9,6 @@
 /* Public variables ----------------------------------------------------------*/
 
 extern bool LEDrun;
-extern bool LCDupdate;
 extern char lcd_text[2][20+1];
 
 /* Public functions --------------------------------------------------------- */

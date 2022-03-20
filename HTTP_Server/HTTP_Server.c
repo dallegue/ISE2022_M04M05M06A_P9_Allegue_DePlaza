@@ -28,7 +28,6 @@
 /* Public variables ----------------------------------------------------------*/
 
 bool LEDrun;
-bool LCDupdate;
 char lcd_text[2][20+1];
 
 /* Private variables ---------------------------------------------------------*/
@@ -72,7 +71,6 @@ void dhcp_client_notify (uint32_t if_num,
     // IP address has changed
     sprintf (lcd_text[0],"IP address:");
     sprintf (lcd_text[1],"%s", ip4_ntoa (val));
-    LCDupdate = true;
   }
 }
 
@@ -97,6 +95,7 @@ int main (void) {
   osThreadCreate (osThread(BlinkLed), NULL);
   osThreadCreate (osThread(thread_hora), NULL);
   
+  /* dar control de lcd y leds a thread_hora */
   pagina_hora_seleccionada = true;
   
   while(1) {

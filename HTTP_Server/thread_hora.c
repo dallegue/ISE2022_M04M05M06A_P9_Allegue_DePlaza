@@ -27,6 +27,8 @@
 /* Public variables ----------------------------------------------------------*/
 
 bool pagina_hora_seleccionada = false;
+char lineaHora[20];
+char lineaFecha[20];
 
 /* Private variables ---------------------------------------------------------*/
 
@@ -83,9 +85,6 @@ void EINT3_IRQHandler (void)
 
 void thread_hora (void const *arg)
 {
-  char lineaHora[20];
-  char lineaFecha[20];
-  
   RTCFullTime.SEC = 0;
   RTCFullTime.MIN = 0;
   RTCFullTime.HOUR = 0;
@@ -126,10 +125,11 @@ void thread_hora (void const *arg)
       RTC_SetFullTime(&RTCFullTime);
     }
     
+    sprintf(lineaHora, "%02d:%02d:%02d", RTCFullTime.HOUR, RTCFullTime.MIN, RTCFullTime.SEC);
+    sprintf(lineaFecha, "%02d/%02d/%02d", RTCFullTime.DOM, RTCFullTime.MONTH, RTCFullTime.YEAR);
+    
     if (pagina_hora_seleccionada)
     {
-      sprintf(lineaHora, "%02d:%02d:%02d", RTCFullTime.HOUR, RTCFullTime.MIN, RTCFullTime.SEC);
-      sprintf(lineaFecha, "%02d/%02d/%02d", RTCFullTime.DOM, RTCFullTime.MONTH, RTCFullTime.YEAR);
       print_lineas(lineaHora, lineaFecha);
     
       /* parpadeo de actualizacion de hora */
