@@ -13,11 +13,13 @@
 #include "rl_net.h"                     /* Network definitions                */
 
 #include "Board_Buttons.h"
-#include "adc.h"
-#include "lcd.h"
 #include "HTTP_Server.h"
 #include "PIN_LPC17xx.h"
 #include "GPIO_LPC17xx.h"
+
+#include "adc.h"
+#include "lcd.h"
+#include "thread_hora.h"
 
 /* Macros --------------------------------------------------------------------*/
 
@@ -47,11 +49,13 @@ static const PIN LED_PIN[] = {
 /* Function prototypes -------------------------------------------------------*/
 
 static void BlinkLed (void const *arg);
-osThreadDef(BlinkLed, osPriorityNormal, 1, 0);
 
 static int32_t LED_On (uint32_t num);
 static int32_t LED_Off (uint32_t num);
 static int32_t LED_Initialize (void);
+
+osThreadDef(BlinkLed, osPriorityNormal, 1, 0);
+osThreadDef(thread_hora, osPriorityNormal, 1, 0);
 
 /* Public functions --------------------------------------------------------- */
 
@@ -84,13 +88,16 @@ int32_t LED_SetOut (uint32_t val) {
 }
 
 int main (void) {
+  
   LED_Initialize     ();
   ADC_Initialize     ();
   net_initialize     ();
+  LCD_SPI_startup();
 
   osThreadCreate (osThread(BlinkLed), NULL);
+  osThreadCreate (osThread(thread_hora), NULL);
   
-  LCD_SPI_startup();
+  pagina_hora_seleccionada = true;
   
   while(1) {
     net_main ();
@@ -147,7 +154,7 @@ static void BlinkLed (void const *arg) {
   const uint8_t led_val[5] = { 0x00, 0x01, 0x02, 0x04, 0x08};
   int cnt = 0;
 
-  LEDrun = true;
+  LEDrun = false;
   while(1) {
     // Every 100 ms
     if (LEDrun == true) {
