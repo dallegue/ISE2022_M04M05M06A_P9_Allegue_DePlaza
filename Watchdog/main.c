@@ -30,6 +30,9 @@
 #define LED_ON 1
 #define LED_OFF !LED_ON
 
+#define PORT_SW 0
+#define SW_DOWN 17
+
 /* valor de fin de cuenta para que el estado inicial sea de 4s */
 #define CUENTA_FIN_ESTADO_INICIAL 8
 
@@ -41,7 +44,7 @@ static uint8_t cuenta = 0;
 static uint8_t estado_led_1 = LED_ON;
 static uint8_t estado_led_2 = LED_OFF;
 static uint8_t estado_led_3 = LED_OFF;
-//static uint8_t estado_led_4 = LED_OFF;
+static uint8_t estado_led_4 = LED_OFF;
 
 /* Other -------------------------------------------------------------------- */
 /* Function prototypes -------------------------------------------------------*/
@@ -85,6 +88,18 @@ static void rit_config(uint32_t periodo_us)
     NVIC_EnableIRQ(RIT_IRQn);
 }
 
+static void switch_config(void)
+{
+    /* Configurar pines de sw como pulldown */
+    PIN_Configure(PORT_SW,SW_DOWN,PIN_FUNC_0,PIN_PINMODE_PULLDOWN,PIN_PINMODE_NORMAL);
+
+    /* Habilitar interrupciones por flanco de subida */
+    LPC_GPIOINT->IO0IntEnR = 1 << SW_DOWN;
+    
+    /* Habilitar interrupciones de EINT3 (interrupciones de GPIO puertos 0 y 2) */
+    NVIC_EnableIRQ(EINT3_IRQn);
+}
+
 /* ISR ---------------------------------------------------------------------- */
 
 void WDT_IRQHandler(void)
@@ -114,18 +129,38 @@ void RIT_IRQHandler(void)
   LPC_RIT->RICTRL |= RIT_CTRL_INT;
 }
 
+/* Al pulsar 10 veces el switch se deja de hacer clear de su interrupcion,
+   y el core se queda atendiendo esta isr en bucle y no atendiendo la del
+   RIT, en la que se hace el feed del watchdog, por lo que el watchdog
+   termina por saltar */
+void EINT3_IRQHandler (void) {
+  static uint32_t cuenta;
+  if (cuenta++ < 10) {
+    GPIO_PinWrite(PORT_LEDS,PIN_LED4, estado_led_4 = !estado_led_4);
+    LPC_GPIOINT->IO0IntClr = 1 << SW_DOWN;
+  }
+}
+
 /* Public functions --------------------------------------------------------- */
 
 int main (void)
 {
   rit_config(RIT_PERIODO_US);
   leds_config();
+  switch_config();
 
   // Init WDT, interrupt mode
   WDT_Init(WDT_MODE_INT_ONLY);
 
   /* Enable the Watch dog interrupt*/
   NVIC_EnableIRQ(WDT_IRQn);
+  
+  /* Si no se configura más prioritario EINT3_IRQn que RIT_IRQn no se cumple que salte el watchdog,
+     aunque no debería hacer falta porque se supone que por defecto EINT3_IRQn es más prioritaria
+     que RIT_IRQn */
+  NVIC_SetPriority(WDT_IRQn, 0x0);
+  NVIC_SetPriority(RIT_IRQn, 0x2);
+  NVIC_SetPriority(EINT3_IRQn, 0x1);
   
   /* timeout = WDT_TIMEOUT_US */
   WDT_Start(WDT_TIMEOUT_US);
