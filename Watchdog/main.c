@@ -9,14 +9,17 @@
 
 /* Macros --------------------------------------------------------------------*/
 
+#define CLKPWR_PCONP_PCRIT ((uint32_t)(1<<16))
+#define RIT_CTRL_INT ((uint32_t) (0x01))
+#define RIT_CTRL_ENCLR ((uint8_t) (0x02))
+#define RIT_CTRL_ENBR ((uint8_t) (0x04))
+#define RIT_CTRL_EN ((uint8_t) (0x08))
+#define RIT_CLOCK ((uint32_t) SystemCoreClock/4)
+
+#define RIT_PERIODO_US ((uint32_t) 500000)
+
 /* Watchodog time out in us*/
 #define WDT_TIMEOUT_US 5000000
-
-#define RIT_CTRL_INT ((uint32_t) (0x01))
-#define RIT_CTRL_ENCLR ((uint32_t) (0x02))
-#define CLKPWR_PCONP_PCRIT ((uint32_t)(1<<16))
-#define RIT_CLOCK ((uint32_t) SystemCoreClock/4)
-#define RIT_PERIODO_MS ((uint32_t) 500)
 
 /* Leds en pines 1.18, 1.20, 1.21, 1.23 */
 #define PORT_LEDS 1
@@ -27,8 +30,8 @@
 #define LED_ON 1
 #define LED_OFF !LED_ON
 
-/* valor de fin de cuenta para que el estado inicial sea de 5s */
-#define CUENTA_FIN_ESTADO_INICIAL 10
+/* valor de fin de cuenta para que el estado inicial sea de 4s */
+#define CUENTA_FIN_ESTADO_INICIAL 8
 
 /* Public variables ----------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
@@ -57,23 +60,27 @@ static void leds_config(void)
     GPIO_SetDir (PORT_LEDS, PIN_LED4, GPIO_DIR_OUTPUT); 
 }
 
-static void rit_config(void)
+/* periodo de entre 1us y 170s  */
+static void rit_config(uint32_t periodo_us)
 {
     /* Habilita reloj de periferico RIT */
     LPC_SC->PCONP |= CLKPWR_PCONP_PCRIT;
     
     /* Configuracion de compare register */
-    LPC_RIT->RICOMPVAL = (RIT_CLOCK/1000) * RIT_PERIODO_MS;
+    LPC_RIT->RICOMPVAL = (RIT_CLOCK/1000000) * periodo_us;
     
     /* Deshabilita el mask register */
     LPC_RIT->RIMASK    = 0x00000000;
     
     /* Configuración para que la cuenta vuelva  a 0 una vez alcance */
     /* el valor en el compare register */
-    LPC_RIT->RICTRL    = RIT_CTRL_ENCLR;
+    LPC_RIT->RICTRL = RIT_CTRL_ENCLR | RIT_CTRL_ENBR;
     
     /* Reset del valor del contador */
     LPC_RIT->RICOUNTER    = 0x00000000;
+  
+    /* Arranca el timer */
+    LPC_RIT->RICTRL |= RIT_CTRL_EN;
     
     NVIC_EnableIRQ(RIT_IRQn);
 }
@@ -85,7 +92,7 @@ void WDT_IRQHandler(void)
 	// Disable WDT interrupt
 	NVIC_DisableIRQ(WDT_IRQn);
   
-  GPIO_PinWrite (PORT_LEDS, PIN_LED1, estado_led_3 = !estado_led_3);
+  GPIO_PinWrite (PORT_LEDS, PIN_LED3, estado_led_3 = !estado_led_3);
   
 	// Clear TimeOut flag
 	LPC_WDT->WDMOD &=~WDT_WDMOD_WDTOF;
@@ -98,9 +105,10 @@ void RIT_IRQHandler(void)
   if (!estado_inicial)
   {
     GPIO_PinWrite (PORT_LEDS, PIN_LED1, estado_led_1 = !estado_led_1);
-    GPIO_PinWrite (PORT_LEDS, PIN_LED1, estado_led_2 = !estado_led_2);
+    GPIO_PinWrite (PORT_LEDS, PIN_LED2, estado_led_2 = !estado_led_2);
   }
   
+  WDT_Feed();
   
   /* Clears RIT interrupt flag */
   LPC_RIT->RICTRL |= RIT_CTRL_INT;
@@ -110,12 +118,8 @@ void RIT_IRQHandler(void)
 
 int main (void)
 {
-  rit_config();
+  rit_config(RIT_PERIODO_US);
   leds_config();
-
-  /* Install interrupt for WDT interrupt */
-  NVIC_SetPriority(WDT_IRQn, 0x10);
-  // Set Watchdog use internal RC, just generate interrupt only in 5ms if Watchdog is not feed
 
   // Init WDT, interrupt mode
   WDT_Init(WDT_MODE_INT_ONLY);
