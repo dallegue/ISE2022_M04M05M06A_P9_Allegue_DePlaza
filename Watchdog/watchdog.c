@@ -10,13 +10,18 @@
 
 #define CLKPWR_PCLK_WDT_BITMASK  (uint32_t)(0x00000003)
 #define WDT_CLKSRC_PCLK (uint32_t) (1 << 0)
-#define WDT_WDMOD_WDRESET (uint32_t) (1 << 1)
+#define WDT_WDMOD_WDRESET (uint8_t) (1 << 1)
+
+/** WDT time out flag bit */
+#define WDT_WDMOD_WDTOF (uint8_t) (1 << 2)
 
 /** Define divider index for microsecond ( us ) */
 #define WDT_US_INDEX	((uint32_t)(1000000))
 
 /** WDT interrupt enable bit */
 #define WDT_WDMOD_WDEN			    ((uint32_t)(1<<0))
+
+#define WDT_WDMOD_WDTOF_BITMASK (uint8_t) (0xf4)
 
 /* Public variables ----------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
@@ -97,4 +102,13 @@ void WDT_Init (WDT_MODE_OPT WDTMode)
   {
     LPC_WDT->WDMOD |= WDT_WDMOD_WDRESET;
   }
+}
+
+bool get_watchdog_causo_reset(void)
+{
+  bool watchdog_causo_reset = LPC_WDT->WDMOD & WDT_WDMOD_WDTOF;
+  
+  LPC_WDT->WDMOD &= ~WDT_WDMOD_WDTOF_BITMASK;
+  
+  return watchdog_causo_reset;
 }

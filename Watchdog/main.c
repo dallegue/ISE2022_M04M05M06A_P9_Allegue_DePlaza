@@ -33,8 +33,18 @@
 #define PORT_SW 0
 #define SW_DOWN 17
 
+#define PORT_RGB_LEDS 2
+#define PIN_RGB_LED_RED 3
+#define PIN_RGB_LED_GREEN 2
+#define PIN_RGB_LED_BLUE 1
+#define RGB_LED_ON 0
+#define RGB_LED_OFF !RGB_LED_ON
+
 /* valor de fin de cuenta para que el estado inicial sea de 4s */
 #define CUENTA_FIN_ESTADO_INICIAL 8
+
+/* valor de fin de cuenta para 3s */
+#define CUENTA_3_S 6
 
 /* Public variables ----------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
@@ -100,22 +110,49 @@ static void switch_config(void)
     NVIC_EnableIRQ(EINT3_IRQn);
 }
 
+static void rgb_leds_config(void)
+{
+    /* Configura pines como salida */
+    GPIO_SetDir (PORT_RGB_LEDS, PIN_RGB_LED_RED, GPIO_DIR_OUTPUT);
+    GPIO_SetDir (PORT_RGB_LEDS, PIN_RGB_LED_GREEN, GPIO_DIR_OUTPUT); 
+    GPIO_SetDir (PORT_RGB_LEDS, PIN_RGB_LED_BLUE, GPIO_DIR_OUTPUT);
+  
+    GPIO_PinWrite (PORT_RGB_LEDS, PIN_RGB_LED_RED, RGB_LED_OFF);
+    GPIO_PinWrite (PORT_RGB_LEDS, PIN_RGB_LED_GREEN, RGB_LED_OFF);
+    GPIO_PinWrite (PORT_RGB_LEDS, PIN_RGB_LED_BLUE, RGB_LED_OFF);
+}
+
+static void indicar_motivo_reset(void)
+{
+  if (get_watchdog_causo_reset())
+  {
+    GPIO_PinWrite (PORT_RGB_LEDS, PIN_RGB_LED_RED, RGB_LED_ON);
+  }
+  else
+  {
+    GPIO_PinWrite (PORT_RGB_LEDS, PIN_RGB_LED_GREEN, RGB_LED_ON);
+  }
+}
+
 /* ISR ---------------------------------------------------------------------- */
 
 void WDT_IRQHandler(void)
 {
 	// Disable WDT interrupt
-	NVIC_DisableIRQ(WDT_IRQn);
+	//NVIC_DisableIRQ(WDT_IRQn);
   
   GPIO_PinWrite (PORT_LEDS, PIN_LED3, estado_led_3 = !estado_led_3);
-  
-	// Clear TimeOut flag
-	LPC_WDT->WDMOD &=~WDT_WDMOD_WDTOF;
 }
 
 void RIT_IRQHandler(void)
 {
   estado_inicial = (++cuenta <= CUENTA_FIN_ESTADO_INICIAL);
+  
+  if (cuenta == CUENTA_3_S)
+  {
+    GPIO_PinWrite (PORT_RGB_LEDS, PIN_RGB_LED_RED, RGB_LED_OFF);
+    GPIO_PinWrite (PORT_RGB_LEDS, PIN_RGB_LED_GREEN, RGB_LED_OFF);
+  }
   
   if (!estado_inicial)
   {
@@ -148,9 +185,12 @@ int main (void)
   rit_config(RIT_PERIODO_US);
   leds_config();
   switch_config();
+  rgb_leds_config();
+  
+  indicar_motivo_reset();
 
   // Init WDT, interrupt mode
-  WDT_Init(WDT_MODE_INT_ONLY);
+  WDT_Init(WDT_MODE_RESET);
 
   /* Enable the Watch dog interrupt*/
   NVIC_EnableIRQ(WDT_IRQn);

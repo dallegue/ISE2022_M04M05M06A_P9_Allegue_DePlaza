@@ -4,12 +4,9 @@
 /* Includes ------------------------------------------------------------------*/
 
 #include <stdint.h>
+#include <stdbool.h>
 
 /* Macros ------------------------------------------------------------------- */
-
-/** WDT time out flag bit */
-#define WDT_WDMOD_WDTOF				((uint32_t)(1<<2))
-
 /* Other -------------------------------------------------------------------- */
 
 /** @brief WDT operation mode */
@@ -24,5 +21,6 @@ typedef enum {
 void WDT_Init (WDT_MODE_OPT WDTMode);
 void WDT_Start(uint32_t TimeOut);
 void WDT_Feed (void);
+bool get_watchdog_causo_reset(void);
 
 #endif
