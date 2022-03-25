@@ -1,11 +1,11 @@
 /**********************************************************************
-* $Id$		iaptest.c			2012-04-18
+* $Id$        iaptest.c            2012-04-18
 *//**
-* @file		lpc17xx_iap.h
- * @brief	IAP demo
-* @version	1.0
-* @date		18. April. 2012
-* @author	NXP MCU SW Application Team
+* @file        lpc17xx_iap.h
+ * @brief    IAP demo
+* @version    1.0
+* @date        18. April. 2012
+* @author    NXP MCU SW Application Team
 * 
 * Copyright(C) 2011, NXP Semiconductor
 * All rights reserved.
@@ -33,193 +33,98 @@
 #include "lpc_types.h"
 #include "lpc17xx_iap.h"
 
- 
-
 /** The area will be erase and program */
 #define FLASH_PROG_AREA_START       0x8000
-#define FLASH_PROG_AREA_SIZE		0x1000
+#define FLASH_PROG_AREA_SIZE        0x1000
 
+/** The origin buffer_wr on RAM, el minimo num de bytes que 
+    pueden escribirse es 256 */
+#define BUFF_SIZE           256
 
-/** The origin buffer on RAM */
-#define BUFF_SIZE           1024
-#ifdef __IAR_SYSTEMS_ICC__
-#pragma data_alignment=4
-uint8_t buffer[BUFF_SIZE];
-#else
-uint8_t __attribute__ ((aligned (4))) buffer[BUFF_SIZE];
-#endif
+uint8_t __attribute__ ((aligned (4))) buffer_wr[BUFF_SIZE];
 
-/** @defgroup IAP_Demo	IAP Demo
- * @ingroup IAP_Examples
- * @{
- */
- 
+/* Solo los primeros 16 bytes son de interes */
+#define BUFF_READ_SIZE           16
 
-/** Main menu */
-uint8_t menu[]=
-"\n\r********************************************************************************\n\r"
-" Hello NXP Semiconductors \n\r"
-" IAP Demotrastion \n\r"
-"\t - MCU: LPC17xx \n\r"
-"\t - Core: ARM CORTEX-M3 \n\r"
-"\t - UART Communication: 115200 bps \n\r"
-"********************************************************************************\n\r";
+static uint32_t i;
+static uint32_t flash_prog_area_sec_start;
+static uint32_t flash_prog_area_sec_end;
+static IAP_STATUS_CODE status;
 
-/*********************************************************************//**
- * @brief		The entry of the program
- *
- * @param[in]None
- *
- * @return 	None.
- *
- **********************************************************************/
-void c_entry (void)
-{	    		
-  uint32_t result[4];
-  uint8_t ver_major, ver_minor;
-  uint32_t i;
-  uint8_t *ptr;
-  uint32_t flash_prog_area_sec_start;
-  uint32_t flash_prog_area_sec_end;
-  IAP_STATUS_CODE status;
+static uint8_t buffer_rd[BUFF_READ_SIZE];
 
-  // Initialize
-  for (i = 0;i < sizeof(buffer);i++)
-  {
-    buffer[i] = (uint8_t)i;
-  }
-  flash_prog_area_sec_start = GetSecNum(FLASH_PROG_AREA_START);
-  flash_prog_area_sec_end =  GetSecNum(FLASH_PROG_AREA_START + FLASH_PROG_AREA_SIZE);
-  
-  /* En realidad como solo se escribe en un sector (el sector 8) lo suyo seria usar esta linea */
-  //flash_prog_area_sec_end =  GetSecNum(FLASH_PROG_AREA_START + FLASH_PROG_AREA_SIZE - 1);
-
-  /* Lee el part id, para la lpc1768 es 0x26013F37 */
-  status = ReadPartID(result);
-  if(status != CMD_SUCCESS)
-  {
-     //_DBG("Read Part ID failed with code is ");_DBD(status);_DBG_("");
-     while(1);
-  }
-
-  //_DBG("PartID: ");_DBH32(result[0]);_DBG_("");
-  
-  status = ReadBootCodeVer(&ver_major, &ver_minor);
-  if(status != CMD_SUCCESS)
-  {
-     //_DBG("Read Boot Code Version failed with code is ");_DBD(status);_DBG_("");
-     while(1);
-  }
-
-  //_DBG("Boot Code Version: ");_DBD(ver_major);_DBG(".");_DBD(ver_minor);_DBG_("");
-
-  status = ReadDeviceSerialNum(result);
-  if(status != CMD_SUCCESS)
-  {
-     //_DBG("Read UID failed with code is ");_DBD(status);_DBG_("");
-     while(1);
-  }
-
-  //_DBG("UID: ");
-  for(i = 0; i < 4; i++)
-  {
-     //_DBD32(result[i]);
-	 if(i<3)
-     {
-	   //_DBG("-");
-     }
-  }
-  //_DBG_("");
-
+static void borrar_sector(void)
+{
+  /* Borrar sector 8 */
   status = EraseSector(flash_prog_area_sec_start, flash_prog_area_sec_end); 
   if(status != CMD_SUCCESS)
   {
-     //_DBG("Erase chip failed with code is ");_DBD(status);_DBG_("");
+     /* Erase chip failed */
      while(1); 
   }
+}
 
-  status = BlankCheckSector(flash_prog_area_sec_start, flash_prog_area_sec_end,
-                                  &result[0], &result[1]);
+static void escribir_sector(void)
+{
+  /* Escribir las primeras 16 posiciones del sector 8 */
+  status =  CopyRAM2Flash((uint8_t*) FLASH_PROG_AREA_START, buffer_wr, IAP_WRITE_256);
   if(status != CMD_SUCCESS)
   {
-     //_DBG("Blank Check failed with code is ");_DBD(status);_DBG_("");
-	 if(status == SECTOR_NOT_BLANK)
-	 {
-	   //_DBG(">>>>The first non-blank sector is sector ");
-	   //_DBD(flash_prog_area_sec_start + result[0]);
-	   //_DBG_("");
-	 }
-     while(1); 
+     /* Program chip failed */
+     while(1);
   }
+}
 
-  //_DBG_("Erase chip: Success");
-
-
-  /* Be aware that Program and ErasePage take long time to complete!!! If bigger
-  RAM is present, allocate big buffer and reduce the number of Program blocks. */
-
-  /* Program flash block by block until the end of the flash. */
-  for ( i = 0; i < FLASH_PROG_AREA_SIZE/BUFF_SIZE; i++ )
+static void modificar_byte(uint8_t posicion, uint8_t valor)
+{
+  /* Leer las primeras 16 posiciones del sector 8, modificar la segunda posicion
+     y escribir el resultado en la flash otra vez */
+  for (i = 0;i < sizeof(buffer_wr);i++)
   {
-    ptr = (uint8_t*)(FLASH_PROG_AREA_START + i*BUFF_SIZE);
-	status =  CopyRAM2Flash(ptr, buffer,IAP_WRITE_1024);
-	if(status != CMD_SUCCESS)
-	{
-	   //_DBG("Program chip failed with code is ");_DBD(status);_DBG_("");
-       while(1);
+    buffer_wr[i] = *(uint8_t*)(FLASH_PROG_AREA_START + i);
+  }
+  
+  borrar_sector();
+  
+  buffer_wr[posicion] = valor;
+  
+  escribir_sector();
+}
+
+static void leer_sector(void)
+{
+  /* Leer las primeras 16 posiciones del sector 8 */
+  for (i = 0;i < sizeof(buffer_rd);i++)
+  {
+    buffer_rd[i] = *(uint8_t*)(FLASH_PROG_AREA_START + i);
+  }
+}
+
+int main (void)
+{
+  // Initialize
+  for (i = 0;i < sizeof(buffer_wr);i++)
+  {
+    if (i < 16)
+    {
+      buffer_wr[i] = (uint8_t)i;
+    }
+    else
+    {
+      buffer_wr[i] = 0;
     }
   }
-  // Compare
-  for ( i = 0; i < FLASH_PROG_AREA_SIZE/BUFF_SIZE; i++ )
-  {
-    ptr = (uint8_t*)(FLASH_PROG_AREA_START + i*BUFF_SIZE);
-	status =  Compare(ptr, buffer,BUFF_SIZE);
-	if(status != CMD_SUCCESS)
-	{
-	   //_DBG("Compare memory failed with code is ");_DBD(status);_DBG_("");
-       while(1);
-	}
-  }
+  
+  flash_prog_area_sec_start = GetSecNum(FLASH_PROG_AREA_START);
+  flash_prog_area_sec_end =  GetSecNum(FLASH_PROG_AREA_START + FLASH_PROG_AREA_SIZE - 1); /* selecciona solo el sector 8 */
 
-   //_DBG_("Program chip: Success");
-
-  //_DBG_("Demo termination");  
+  borrar_sector();
+  
+  escribir_sector();
+  
+  leer_sector();
+  
+  modificar_byte(1, 0xea);
   
   while (1);
 }
-
-/*********************************************************************//**
- * @brief		The main program
- *
- * @param[in] None
- *
- * @return 	None.
- *
- **********************************************************************/
- int main (void)
-{
-   c_entry();
-   return 0;
-}
-#ifdef  DEBUG
-/*******************************************************************************
-* @brief		Reports the name of the source file and the source line number
-* 				where the CHECK_PARAM error has occurred.
-* @param[in]	file Pointer to the source file name
-* @param[in]    line assert_param error line source number
-* @return		None
-*******************************************************************************/
-void check_failed(uint8_t *file, uint32_t line)
-{
-	/* User can add his own implementation to report the file name and line number,
-	 ex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
-
-	/* Infinite loop */
-	while(1);
-}
-#endif
- /*
- * @}
- */
-
-
