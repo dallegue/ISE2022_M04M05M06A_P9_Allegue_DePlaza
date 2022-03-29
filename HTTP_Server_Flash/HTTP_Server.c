@@ -107,7 +107,6 @@ static void BlinkLed (void const *arg) {
   const uint8_t led_val[5] = { 0x00, 0x01, 0x02, 0x04, 0x08};
   int cnt = 0;
 
-  LEDrun = false;
   while(1) {
     // Every 100 ms
     if (LEDrun == true) {
@@ -117,6 +116,20 @@ static void BlinkLed (void const *arg) {
       }
     }
     osDelay (100);
+  }
+}
+
+static void procesar_estado_leds (void)
+{
+  uint8_t estado_leds = leer_FLASH_LEDS();
+  
+  if (estado_leds == FLASH_LEDS_ROTATORIO)
+  {
+    LEDrun = true;
+  }
+  else
+  {
+    LED_SetOut(estado_leds);
   }
 }
 
@@ -149,20 +162,15 @@ int32_t LED_SetOut (uint32_t val) {
   return 0;
 }
 
-static void guardar_MAC_IP (void)
-{
-  //uint8_t mac [] = {ETH0_MAC1, ETH0_MAC2, ETH0_MAC3, ETH0_MAC4, ETH0_MAC5, ETH0_MAC6};
-  //uint8_t ip [] = {ETH0_IP1, ETH0_IP2, ETH0_IP3, ETH0_IP4};
-  escribir_FLASH_MAC_IP();
-}
-
 int main (void) {
   
   LED_Initialize     ();
   ADC_Initialize     ();
   net_initialize     ();
   LCD_SPI_startup();
-  guardar_MAC_IP();
+  
+  escribir_FLASH_MAC_IP();
+  procesar_estado_leds();
 
   osThreadCreate (osThread(BlinkLed), NULL);
   osThreadCreate (osThread(thread_hora), NULL);

@@ -15,6 +15,7 @@
 #include "adc.h"
 #include "HTTP_Server.h"
 #include "thread_hora.h"
+#include "flash.h"
 
 // http_server.c
 extern uint8_t  get_button (void);
@@ -84,14 +85,13 @@ void cgi_process_query (const char *qstr) {
 //            - 5 = the same as 4, but with more XML data to follow.
 void cgi_process_data (uint8_t code, const char *data, uint32_t len) {
   char var[40],passw[12];
+  
+  uint8_t estado_leds;
 
   if (code != 0) {
     // Ignore all other codes
     return;
   }
-
-  P2 = 0;
-  LEDrun = true;
   
   if (len == 0) {
     // No data or all items (radio, checkbox) are off
@@ -121,6 +121,9 @@ void cgi_process_data (uint8_t code, const char *data, uint32_t len) {
       }
       else if (strcmp (var, "ctrl=Browser") == 0) {
         LEDrun = false;
+      }
+      else if (strcmp (var, "ctrl=Running Lights") == 0) {
+        LEDrun = true;
       }
       
       /* password */
@@ -155,6 +158,17 @@ void cgi_process_data (uint8_t code, const char *data, uint32_t len) {
   } while (data);
   
   LED_SetOut (P2);
+  
+  if (LEDrun)
+  {
+    estado_leds = FLASH_LEDS_ROTATORIO;
+  }
+  else
+  {
+    estado_leds = P2;
+  }
+  
+  escribir_FLASH_LEDS(estado_leds);
 }
 
 // Generate dynamic web data from a script line.

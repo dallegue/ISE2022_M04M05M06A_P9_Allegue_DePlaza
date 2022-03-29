@@ -36,6 +36,8 @@ t </font></table></td></tr>
 t <tr><td><img src=pabb.gif>All LED diodes On or OFF</td>
 t <td><input type=button value="&nbsp;&nbsp;ON&nbsp;&nbsp;&nbsp;" onclick="AllSW(true)">
 t <input type=button value="&nbsp;&nbsp;OFF&nbsp;&nbsp;" onclick="AllSW(false)"></td></tr>
+#t <tr><td><img src=pabb.gif>Guardar estado de los leds</td>
+#c b g <td><input type=button value="Guardar"></td></tr>
 t </table></form>
 i pg_footer.inc
 . End of script must be closed with period.

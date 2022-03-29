@@ -1,34 +1,3 @@
-/**********************************************************************
-* $Id$		lpc17xx_iap.c			2012-04-18
-*//**
-* @file		lpc17xx_iap.c
- * @brief	Contains all functions support for IAP on lpc17xx
-* @version	1.0
-* @date		18. April. 2012
-* @author	NXP MCU SW Application Team
-* 
-* Copyright(C) 2011, NXP Semiconductor
-* All rights reserved.
-*
-***********************************************************************
-* Software that is described herein is for illustrative purposes only
-* which provides customers with programming information regarding the
-* products. This software is supplied "AS IS" without any warranties.
-* NXP Semiconductors assumes no responsibility or liability for the
-* use of the software, conveys no license or title under any patent,
-* copyright, or mask work right to the product. NXP Semiconductors
-* reserves the right to make changes in the software without
-* notification. NXP Semiconductors also make no representation or
-* warranty that such application will be suitable for the specified
-* use without further testing or modification.
-* Permission to use, copy, modify, and distribute this software and its
-* documentation is hereby granted, under NXP Semiconductors'
-* relevant copyright in the software, without fee, provided that it
-* is used in conjunction with NXP Semiconductors microcontrollers.  This
-* copyright, permission, and disclaimer notice must appear in all copies of
-* this code.
-**********************************************************************/
-
 /* Includes ------------------------------------------------------------------*/
 
 #include "flash.h"
@@ -49,7 +18,7 @@
 //  IAP Command
 typedef void (*IAP)(uint32_t *cmd,uint32_t *result);
 IAP iap_entry_flash_c = (IAP) IAP_LOCATION;
-#define IAP_Call 	iap_entry_flash_c
+#define IAP_Call   iap_entry_flash_c
 
 /** The area will be erase and program */
 #define FLASH_PROG_AREA_START       0xf000
@@ -59,10 +28,7 @@ IAP iap_entry_flash_c = (IAP) IAP_LOCATION;
     pueden escribirse es 256 */
 #define BUFF_SIZE           256
 
-uint8_t __attribute__ ((aligned (4))) buffer_wr[BUFF_SIZE];
-
-/* Solo los primeros 16 bytes son de interes */
-//#define BUFF_READ_SIZE           16
+#define BYTE_LEDS_OFFSET 10
 
 /* Public variables ----------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
@@ -71,31 +37,19 @@ static uint32_t i;
 static uint32_t flash_prog_area_sec_start;
 static uint32_t flash_prog_area_sec_end;
 static IAP_STATUS_CODE status;
-
-//static uint8_t buffer_rd[BUFF_READ_SIZE];
+static uint8_t __attribute__ ((aligned (4))) buffer_wr[BUFF_SIZE];
 
 /* Other -------------------------------------------------------------------- */
 /* Function prototypes -------------------------------------------------------*/
-
-/**  Get sector number of an address */
-static uint32_t GetSecNum (uint32_t adr);
-/**  Prepare sector(s) for write operation */
-static IAP_STATUS_CODE PrepareSector(uint32_t start_sec, uint32_t end_sec);
-/**  Copy RAM to Flash */
-static IAP_STATUS_CODE CopyRAM2Flash(uint8_t * dest, uint8_t* source, IAP_WRITE_SIZE size);
-/**  Prepare sector(s) for write operation */
-static IAP_STATUS_CODE EraseSector(uint32_t start_sec, uint32_t end_sec);
-
-
 /* Private functions -------------------------------------------------------- */
 
 
 /*********************************************************************//**
- * @brief		Get Sector Number
+ * @brief    Get Sector Number
  *
- * @param[in] adr	           Sector Address
+ * @param[in] adr             Sector Address
  *
- * @return 	Sector Number.
+ * @return   Sector Number.
  *
  **********************************************************************/
 static uint32_t GetSecNum (uint32_t adr)
@@ -111,12 +65,12 @@ static uint32_t GetSecNum (uint32_t adr)
 }
 
 /*********************************************************************//**
- * @brief		Prepare sector(s) for write operation
+ * @brief    Prepare sector(s) for write operation
  *
- * @param[in] start_sec	          The number of start sector
- * @param[in] end_sec	          The number of end sector
+ * @param[in] start_sec            The number of start sector
+ * @param[in] end_sec            The number of end sector
  *
- * @return 	CMD_SUCCESS/BUSY/INVALID_SECTOR.
+ * @return   CMD_SUCCESS/BUSY/INVALID_SECTOR.
  *
  **********************************************************************/
 static IAP_STATUS_CODE PrepareSector(uint32_t start_sec, uint32_t end_sec)
@@ -130,13 +84,13 @@ static IAP_STATUS_CODE PrepareSector(uint32_t start_sec, uint32_t end_sec)
 }
 
 /*********************************************************************//**
- * @brief		 Copy RAM to Flash
+ * @brief     Copy RAM to Flash
  *
- * @param[in] dest	          destination buffer (in Flash memory).
- * @param[in] source	   source buffer (in RAM).
- * @param[in] size	          the write size.
+ * @param[in] dest            destination buffer (in Flash memory).
+ * @param[in] source     source buffer (in RAM).
+ * @param[in] size            the write size.
  *
- * @return 	CMD_SUCCESS.
+ * @return   CMD_SUCCESS.
  *                  SRC_ADDR_ERROR/DST_ADDR_ERROR
  *                  SRC_ADDR_NOT_MAPPED/DST_ADDR_NOT_MAPPED
  *                  COUNT_ERROR/SECTOR_NOT_PREPARED_FOR_WRITE_OPERATION
@@ -149,30 +103,30 @@ static IAP_STATUS_CODE CopyRAM2Flash(uint8_t * dest, uint8_t* source, IAP_WRITE_
     IAP_STATUS_CODE status;
     IAP_COMMAND_Type command;
 
-	// Prepare sectors
+  // Prepare sectors
     sec = GetSecNum((uint32_t)dest);
-   	status = PrepareSector(sec, sec);
-	if(status != CMD_SUCCESS)
+     status = PrepareSector(sec, sec);
+  if(status != CMD_SUCCESS)
         return status;
    
-	// write
-	command.cmd    = IAP_COPY_RAM2FLASH;             // Copy RAM to Flash
+  // write
+  command.cmd    = IAP_COPY_RAM2FLASH;             // Copy RAM to Flash
     command.param[0] = (uint32_t)dest;                 // Destination Flash Address
     command.param[1] = (uint32_t)source;               // Source RAM Address
     command.param[2] =  size;                          // Number of bytes
     command.param[3] =  SystemCoreClock / 1000;         // CCLK in kHz
     IAP_Call (&command.cmd, &command.status);              // Call IAP Command
-	  
-    return (IAP_STATUS_CODE)command.status;             // Finished without Errors	  
+    
+    return (IAP_STATUS_CODE)command.status;             // Finished without Errors    
 }
 
 /*********************************************************************//**
- * @brief		 Erase sector(s)
+ * @brief     Erase sector(s)
  *
- * @param[in] start_sec	   The number of start sector
- * @param[in] end_sec	   The number of end sector
+ * @param[in] start_sec     The number of start sector
+ * @param[in] end_sec     The number of end sector
  *
- * @return 	CMD_SUCCESS.
+ * @return   CMD_SUCCESS.
  *                  INVALID_SECTOR
  *                  SECTOR_NOT_PREPARED_FOR_WRITE_OPERATION
  *                  BUSY
@@ -183,12 +137,12 @@ static IAP_STATUS_CODE EraseSector(uint32_t start_sec, uint32_t end_sec)
     IAP_COMMAND_Type command;
     IAP_STATUS_CODE status;
 
-	// Prepare sectors
-   	status = PrepareSector(start_sec, end_sec);
-	if(status != CMD_SUCCESS)
+  // Prepare sectors
+     status = PrepareSector(start_sec, end_sec);
+  if(status != CMD_SUCCESS)
         return status;
 
-	// Erase sectors
+  // Erase sectors
     command.cmd    = IAP_ERASE;                    // Prepare Sector for Write
     command.param[0] = start_sec;                  // Start Sector
     command.param[1] = end_sec;                    // End Sector
@@ -197,48 +151,19 @@ static IAP_STATUS_CODE EraseSector(uint32_t start_sec, uint32_t end_sec)
     return (IAP_STATUS_CODE)command.status;  
 }
 
-
-/* Public functions --------------------------------------------------------- */
-
-void borrar_sector(void)
+static void borrar_sector(void)
 {
-  /* Borrar sector 8 */
   status = EraseSector(flash_prog_area_sec_start, flash_prog_area_sec_end); 
-  if(status != CMD_SUCCESS)
-  {
-     /* Erase chip failed */
-     while(1); 
-  }
+  while(status != CMD_SUCCESS);
 }
 
-void escribir_sector(void)
+static void escribir_sector(void)
 {
-  /* Escribir las primeras 16 posiciones del sector 8 */
   status =  CopyRAM2Flash((uint8_t*) FLASH_PROG_AREA_START, buffer_wr, IAP_WRITE_256);
-  if(status != CMD_SUCCESS)
-  {
-     /* Program chip failed */
-     while(1);
-  }
+  while(status != CMD_SUCCESS);
 }
 
-void modificar_byte(uint8_t posicion, uint8_t valor)
-{
-  /* Leer las primeras 16 posiciones del sector 8, modificar la segunda posicion
-     y escribir el resultado en la flash otra vez */
-  for (i = 0;i < sizeof(buffer_wr);i++)
-  {
-    buffer_wr[i] = *(uint8_t*)(FLASH_PROG_AREA_START + i);
-  }
-  
-  borrar_sector();
-  
-  buffer_wr[posicion] = valor;
-  
-  escribir_sector();
-}
-
-//void leer_sector(void)
+//static void leer_sector(void)
 //{
 //  /* Leer las primeras 16 posiciones del sector 8 */
 //  for (i = 0;i < sizeof(buffer_rd);i++)
@@ -246,6 +171,9 @@ void modificar_byte(uint8_t posicion, uint8_t valor)
 //    buffer_rd[i] = *(uint8_t*)(FLASH_PROG_AREA_START + i);
 //  }
 //}
+
+
+/* Public functions --------------------------------------------------------- */
 
 void escribir_FLASH_MAC_IP (void)
 {
@@ -255,6 +183,7 @@ void escribir_FLASH_MAC_IP (void)
   flash_prog_area_sec_start = GetSecNum(FLASH_PROG_AREA_START);
   flash_prog_area_sec_end =  GetSecNum(FLASH_PROG_AREA_START + FLASH_PROG_AREA_SIZE - 1); /* selecciona solo el sector 8 */
   
+  /* lee los bytes que hay en la flash y los guarda en buffer_wr */
   for (i = 0;i < sizeof(buffer_wr);i++)
   {
     buffer_wr[i] = *(uint8_t*)(FLASH_PROG_AREA_START + i);
@@ -262,13 +191,13 @@ void escribir_FLASH_MAC_IP (void)
   
   borrar_sector();
   
-  /* copia la mac en las primeras 6 posiciones */
+  /* copia la mac en las primeras 6 posiciones del buffer */
   for (i = 0;i < LONGITUD_MAC;i++)
   {
     buffer_wr[i] = mac[i];
   }
   
-  /* copia la ip en las primeras 6 posiciones */
+  /* copia la ip en las primeras 6 posiciones del buffer */
   for (i = 0;i < LONGITUD_IP;i++)
   {
     buffer_wr[i + 6] = ip[i];
@@ -277,31 +206,32 @@ void escribir_FLASH_MAC_IP (void)
   escribir_sector();
 }
 
-//int main (void)
-//{
-//  // Initialize
-//  for (i = 0;i < sizeof(buffer_wr);i++)
-//  {
-//    if (i < 16)
-//    {
-//      buffer_wr[i] = (uint8_t)i;
-//    }
-//    else
-//    {
-//      buffer_wr[i] = 0;
-//    }
-//  }
-//  
-//  flash_prog_area_sec_start = GetSecNum(FLASH_PROG_AREA_START);
-//  flash_prog_area_sec_end =  GetSecNum(FLASH_PROG_AREA_START + FLASH_PROG_AREA_SIZE - 1); /* selecciona solo el sector 8 */
+uint8_t leer_FLASH_LEDS (void)
+{
+  return *(uint8_t*)(FLASH_PROG_AREA_START + BYTE_LEDS_OFFSET);
+}
 
-//  borrar_sector();
-//  
-//  escribir_sector();
-//  
-//  leer_sector();
-//  
-//  modificar_byte(1, 0xea);
-//  
-//  while (1);
-//}
+void escribir_FLASH_LEDS (uint8_t estado_leds)
+{
+  /* Si no se va a escribir nada distinto no escribir nada */
+  if (leer_FLASH_LEDS() == estado_leds)
+  {
+    return;
+  }
+  
+  flash_prog_area_sec_start = GetSecNum(FLASH_PROG_AREA_START);
+  flash_prog_area_sec_end =  GetSecNum(FLASH_PROG_AREA_START + FLASH_PROG_AREA_SIZE - 1); /* selecciona solo el sector 8 */
+  
+  /* lee los bytes que hay en la flash y los guarda en buffer_wr */
+  for (i = 0;i < sizeof(buffer_wr);i++)
+  {
+    buffer_wr[i] = *(uint8_t*)(FLASH_PROG_AREA_START + i);
+  }
+  
+  borrar_sector();
+  
+  /* copia el estado de los leds en el byte numero 11 */
+  buffer_wr[BYTE_LEDS_OFFSET] = estado_leds;
+  
+  escribir_sector();
+}
