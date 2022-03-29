@@ -93,6 +93,8 @@ void cgi_process_data (uint8_t code, const char *data, uint32_t len) {
     return;
   }
   
+  P2 = 0;
+  
   if (len == 0) {
     // No data or all items (radio, checkbox) are off
     LED_SetOut (P2);
@@ -165,7 +167,7 @@ void cgi_process_data (uint8_t code, const char *data, uint32_t len) {
   }
   else
   {
-    estado_leds = P2;
+    estado_leds = P2 | FLASH_LEDS_MANUAL;
   }
   
   escribir_FLASH_LEDS(estado_leds);
@@ -322,6 +324,9 @@ uint32_t cgi_script (const char *env, char *buf, uint32_t buflen, uint32_t *pcgi
           len = sprintf (buf, &env[4], adv);
           break;
       }
+      
+      //comparar_valor_ADC(adv);
+      
       break;
       
     /* pagina hora */
@@ -344,6 +349,7 @@ uint32_t cgi_script (const char *env, char *buf, uint32_t buflen, uint32_t *pcgi
       // AD Input from 'ad.cgx'
       adv = AD_in (0);
       len = sprintf (buf, &env[1], adv);
+      //actualizar led?
       break;
 
     case 'y':

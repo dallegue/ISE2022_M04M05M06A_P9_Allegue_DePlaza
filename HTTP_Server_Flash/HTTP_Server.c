@@ -27,6 +27,13 @@
 
 #define LED_COUNT (4)
 
+#define PORT_RGB_LEDS 2
+#define PIN_RGB_LED_RED 3
+#define PIN_RGB_LED_GREEN 2
+#define PIN_RGB_LED_BLUE 1
+#define RGB_LED_ON 0
+#define RGB_LED_OFF !RGB_LED_ON
+
 /* Public variables ----------------------------------------------------------*/
 
 bool LEDrun;
@@ -133,6 +140,13 @@ static void procesar_estado_leds (void)
   }
 }
 
+static void rgb_leds_config(void)
+{
+    /* Configura pines como salida */
+    GPIO_SetDir (PORT_RGB_LEDS, PIN_RGB_LED_BLUE, GPIO_DIR_OUTPUT);
+    GPIO_PinWrite (PORT_RGB_LEDS, PIN_RGB_LED_BLUE, RGB_LED_OFF);
+}
+
 /* Public functions --------------------------------------------------------- */
 
 /* No se usa */
@@ -162,6 +176,21 @@ int32_t LED_SetOut (uint32_t val) {
   return 0;
 }
 
+void  comparar_valor_ADC (uint16_t valor)
+{
+  /* convertir de 12 bits a 8 bits */
+  uint8_t valor_rango_8_bits = (uint8_t) (valor * 255 / 4095);
+  
+  if (valor_rango_8_bits > leer_FLASH_ADC())
+  {
+    GPIO_PinWrite (PORT_RGB_LEDS, PIN_RGB_LED_BLUE, RGB_LED_ON);
+  }
+  else
+  {
+    GPIO_PinWrite (PORT_RGB_LEDS, PIN_RGB_LED_BLUE, RGB_LED_OFF);
+  }
+}
+
 int main (void) {
   
   LED_Initialize     ();
@@ -171,6 +200,8 @@ int main (void) {
   
   escribir_FLASH_MAC_IP();
   procesar_estado_leds();
+  
+  rgb_leds_config();
 
   osThreadCreate (osThread(BlinkLed), NULL);
   osThreadCreate (osThread(thread_hora), NULL);

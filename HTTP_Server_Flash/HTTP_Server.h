@@ -23,6 +23,8 @@ extern char lcd_text[2][20+1];
 */
 int32_t  LED_SetOut       (uint32_t val);
 
+void  comparar_valor_ADC (uint16_t valor);
+
 /* Other -------------------------------------------------------------------- */
 
 #endif

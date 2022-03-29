@@ -29,6 +29,7 @@ IAP iap_entry_flash_c = (IAP) IAP_LOCATION;
 #define BUFF_SIZE           256
 
 #define BYTE_LEDS_OFFSET 10
+#define BYTE_ADC_OFFSET 11
 
 /* Public variables ----------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
@@ -234,4 +235,9 @@ void escribir_FLASH_LEDS (uint8_t estado_leds)
   buffer_wr[BYTE_LEDS_OFFSET] = estado_leds;
   
   escribir_sector();
+}
+
+uint8_t leer_FLASH_ADC (void)
+{
+  return *(uint8_t*)(FLASH_PROG_AREA_START + BYTE_ADC_OFFSET);
 }
