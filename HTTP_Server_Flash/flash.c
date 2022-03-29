@@ -21,8 +21,11 @@ IAP iap_entry_flash_c = (IAP) IAP_LOCATION;
 #define IAP_Call   iap_entry_flash_c
 
 /** The area will be erase and program */
-#define FLASH_PROG_AREA_START       0xf000
-#define FLASH_PROG_AREA_SIZE        0x1000
+//#define FLASH_PROG_AREA_START       0xf000
+//#define FLASH_PROG_AREA_SIZE        0x1000
+/* para escribir en esta seccion adaptar resto del codigo */
+#define FLASH_PROG_AREA_START       0x00020000
+#define FLASH_PROG_AREA_SIZE        0x00008000
 
 /** The origin buffer_wr on RAM, el minimo num de bytes que 
     pueden escribirse es 256 */
@@ -182,7 +185,7 @@ void escribir_FLASH_MAC_IP (void)
   uint8_t ip [] = {ETH0_IP1, ETH0_IP2, ETH0_IP3, ETH0_IP4};
   
   flash_prog_area_sec_start = GetSecNum(FLASH_PROG_AREA_START);
-  flash_prog_area_sec_end =  GetSecNum(FLASH_PROG_AREA_START + FLASH_PROG_AREA_SIZE - 1); /* selecciona solo el sector 8 */
+  flash_prog_area_sec_end =  GetSecNum(FLASH_PROG_AREA_START + FLASH_PROG_AREA_SIZE - 1);
   
   /* lee los bytes que hay en la flash y los guarda en buffer_wr */
   for (i = 0;i < sizeof(buffer_wr);i++)
@@ -221,7 +224,7 @@ void escribir_FLASH_LEDS (uint8_t estado_leds)
   }
   
   flash_prog_area_sec_start = GetSecNum(FLASH_PROG_AREA_START);
-  flash_prog_area_sec_end =  GetSecNum(FLASH_PROG_AREA_START + FLASH_PROG_AREA_SIZE - 1); /* selecciona solo el sector 8 */
+  flash_prog_area_sec_end =  GetSecNum(FLASH_PROG_AREA_START + FLASH_PROG_AREA_SIZE - 1);
   
   /* lee los bytes que hay en la flash y los guarda en buffer_wr */
   for (i = 0;i < sizeof(buffer_wr);i++)
