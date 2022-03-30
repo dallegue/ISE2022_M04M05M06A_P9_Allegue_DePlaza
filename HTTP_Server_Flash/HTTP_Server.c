@@ -179,7 +179,7 @@ int32_t LED_SetOut (uint32_t val) {
 void  comparar_valor_ADC (uint16_t valor)
 {
   /* convertir de 12 bits a 8 bits */
-  uint8_t valor_rango_8_bits = (uint8_t) (valor * 255 / 4095);
+  uint8_t valor_rango_8_bits = (uint8_t) (((uint32_t) valor) * 255 / 4095);
   
   if (valor_rango_8_bits > leer_FLASH_ADC())
   {
@@ -200,6 +200,7 @@ int main (void) {
   
   escribir_FLASH_MAC_IP();
   procesar_estado_leds();
+  escribir_FLASH_ADC(0x80);
   
   rgb_leds_config();
 

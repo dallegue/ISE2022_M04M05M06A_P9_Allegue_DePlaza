@@ -315,6 +315,8 @@ uint32_t cgi_script (const char *env, char *buf, uint32_t buflen, uint32_t *pcgi
         case '1':
           adv = AD_in (0);
           len = sprintf (buf, &env[4], adv);
+      
+          comparar_valor_ADC(adv);
           break;
         case '2':
           len = sprintf (buf, &env[4], (float)adv*3.3f/4096);
@@ -324,9 +326,6 @@ uint32_t cgi_script (const char *env, char *buf, uint32_t buflen, uint32_t *pcgi
           len = sprintf (buf, &env[4], adv);
           break;
       }
-      
-      //comparar_valor_ADC(adv);
-      
       break;
       
     /* pagina hora */
@@ -349,7 +348,7 @@ uint32_t cgi_script (const char *env, char *buf, uint32_t buflen, uint32_t *pcgi
       // AD Input from 'ad.cgx'
       adv = AD_in (0);
       len = sprintf (buf, &env[1], adv);
-      //actualizar led?
+      comparar_valor_ADC(adv);
       break;
 
     case 'y':

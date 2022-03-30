@@ -21,6 +21,7 @@ void escribir_FLASH_MAC_IP (void);
 uint8_t leer_FLASH_LEDS (void);
 void escribir_FLASH_LEDS (uint8_t estado_leds);
 uint8_t leer_FLASH_ADC (void);
+void escribir_FLASH_ADC (uint8_t valor);
 
 /* Other -------------------------------------------------------------------- */
 

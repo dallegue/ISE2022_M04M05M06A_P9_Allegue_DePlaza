@@ -344,9 +344,9 @@
         <Bp>
           <Number>0</Number>
           <Type>0</Type>
-          <LineNumber>196</LineNumber>
+          <LineNumber>184</LineNumber>
           <EnabledFlag>1</EnabledFlag>
-          <Address>1180</Address>
+          <Address>1148</Address>
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
           <ManyObjects>0</ManyObjects>
@@ -355,7 +355,7 @@
           <BreakIfRCount>1</BreakIfRCount>
           <Filename>.\HTTP_Server.c</Filename>
           <ExecCommand></ExecCommand>
-          <Expression>\\HTTP_Server\HTTP_Server.c\196</Expression>
+          <Expression>\\HTTP_Server\HTTP_Server.c\184</Expression>
         </Bp>
       </Breakpoint>
       <WatchWindow1>
@@ -382,22 +382,40 @@
         <Ww>
           <count>4</count>
           <WinNumber>1</WinNumber>
-          <ItemText>start_sec</ItemText>
+          <ItemText>flash_prog_area_sec_start</ItemText>
         </Ww>
         <Ww>
           <count>5</count>
           <WinNumber>1</WinNumber>
-          <ItemText>estado_leds</ItemText>
+          <ItemText>flash_prog_area_sec_end</ItemText>
+        </Ww>
+        <Ww>
+          <count>6</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>valor</ItemText>
+        </Ww>
+        <Ww>
+          <count>7</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>valor_rango_8_bits</ItemText>
         </Ww>
       </WatchWindow1>
       <MemoryWindow1>
         <Mm>
           <WinNumber>1</WinNumber>
           <SubType>0</SubType>
-          <ItemText>0xf000</ItemText>
+          <ItemText>0x30000</ItemText>
           <AccSizeX>0</AccSizeX>
         </Mm>
       </MemoryWindow1>
+      <MemoryWindow2>
+        <Mm>
+          <WinNumber>2</WinNumber>
+          <SubType>0</SubType>
+          <ItemText>valor_rango_8_bits</ItemText>
+          <AccSizeX>0</AccSizeX>
+        </Mm>
+      </MemoryWindow2>
       <Tracepoint>
         <THDelay>0</THDelay>
       </Tracepoint>

@@ -135,6 +135,7 @@ void thread_hora (void const *arg)
       /* parpadeo de actualizacion de hora */
       if (parpadear_led_3)
       {
+        estado_led_3 = GPIO_PinRead(PORT_LEDS, PIN_LED3);
         estado_led_3 = !estado_led_3;
         GPIO_PinWrite (PORT_LEDS, PIN_LED3, estado_led_3);
         
@@ -148,6 +149,7 @@ void thread_hora (void const *arg)
       /* parpadeo de incremento de minuto */
       if (parpadear_led_4)
       {
+        estado_led_4 = GPIO_PinRead(PORT_LEDS, PIN_LED4);
         estado_led_4 = !estado_led_4;
         GPIO_PinWrite (PORT_LEDS, PIN_LED4, estado_led_4);
         

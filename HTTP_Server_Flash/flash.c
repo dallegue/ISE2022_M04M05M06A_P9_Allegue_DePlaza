@@ -23,8 +23,8 @@ IAP iap_entry_flash_c = (IAP) IAP_LOCATION;
 /** The area will be erase and program */
 //#define FLASH_PROG_AREA_START       0xf000
 //#define FLASH_PROG_AREA_SIZE        0x1000
-/* para escribir en esta seccion adaptar resto del codigo */
-#define FLASH_PROG_AREA_START       0x00020000
+/* Sector 20 (0x14), es de 32kB */
+#define FLASH_PROG_AREA_START       0x00030000
 #define FLASH_PROG_AREA_SIZE        0x00008000
 
 /** The origin buffer_wr on RAM, el minimo num de bytes que 
@@ -176,6 +176,25 @@ static void escribir_sector(void)
 //  }
 //}
 
+static void escribir_FLASH_byte (uint8_t valor, uint8_t addr_offset)
+{
+  flash_prog_area_sec_start = GetSecNum(FLASH_PROG_AREA_START);
+  flash_prog_area_sec_end =  GetSecNum(FLASH_PROG_AREA_START + FLASH_PROG_AREA_SIZE - 1);
+  
+  /* lee los bytes que hay en la flash y los guarda en buffer_wr */
+  for (i = 0;i < sizeof(buffer_wr);i++)
+  {
+    buffer_wr[i] = *(uint8_t*)(FLASH_PROG_AREA_START + i);
+  }
+  
+  borrar_sector();
+  
+  /* copia el estado de los leds en el byte numero 11 */
+  buffer_wr[addr_offset] = valor;
+  
+  escribir_sector();
+}
+
 
 /* Public functions --------------------------------------------------------- */
 
@@ -223,24 +242,21 @@ void escribir_FLASH_LEDS (uint8_t estado_leds)
     return;
   }
   
-  flash_prog_area_sec_start = GetSecNum(FLASH_PROG_AREA_START);
-  flash_prog_area_sec_end =  GetSecNum(FLASH_PROG_AREA_START + FLASH_PROG_AREA_SIZE - 1);
-  
-  /* lee los bytes que hay en la flash y los guarda en buffer_wr */
-  for (i = 0;i < sizeof(buffer_wr);i++)
-  {
-    buffer_wr[i] = *(uint8_t*)(FLASH_PROG_AREA_START + i);
-  }
-  
-  borrar_sector();
-  
-  /* copia el estado de los leds en el byte numero 11 */
-  buffer_wr[BYTE_LEDS_OFFSET] = estado_leds;
-  
-  escribir_sector();
+  escribir_FLASH_byte(estado_leds, BYTE_LEDS_OFFSET);
 }
 
 uint8_t leer_FLASH_ADC (void)
 {
   return *(uint8_t*)(FLASH_PROG_AREA_START + BYTE_ADC_OFFSET);
+}
+
+void escribir_FLASH_ADC (uint8_t valor)
+{
+  /* Si no se va a escribir nada distinto no escribir nada */
+  if (leer_FLASH_ADC() == valor)
+  {
+    return;
+  }
+  
+  escribir_FLASH_byte(valor, BYTE_ADC_OFFSET);
 }
