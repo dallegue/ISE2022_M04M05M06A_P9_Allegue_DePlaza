@@ -10,10 +10,10 @@
 
 #define SIG_TEMP              0x0001
 
-#define PORT_INT_LED_1 1
-#define PIN_INT_LED_1 18
-#define INT_LED_ON 1
-#define INT_LED_OFF !INT_LED_ON
+#define PORT_INT 0
+#define PIN_INT 24
+#define INT_ON 1
+#define INT_OFF !INT_ON
 
 #define BYTE_RX_INT_MASK (uint8_t) (0x04)
 
@@ -110,11 +110,11 @@ int Init_Thread (void) {
 static void comprobar_byte(uint8_t byte_rx)
 {
   /* Clear linea int */
-  GPIO_PinWrite (PORT_INT_LED_1, PIN_INT_LED_1, INT_LED_OFF);
+  GPIO_PinWrite (PORT_INT, PIN_INT, INT_OFF);
   
   if (byte_rx & BYTE_RX_INT_MASK)
   {
-    GPIO_PinWrite (PORT_INT_LED_1, PIN_INT_LED_1, INT_LED_ON);
+    GPIO_PinWrite (PORT_INT, PIN_INT, INT_ON);
   }
 }
 
@@ -122,7 +122,7 @@ void Thread (void const *argument) {
   uint8_t byte_rx;
   uint8_t byte_tx;
   
-  GPIO_SetDir (PORT_INT_LED_1, PIN_INT_LED_1, GPIO_DIR_OUTPUT);
+  GPIO_SetDir (PORT_INT, PIN_INT, GPIO_DIR_OUTPUT);
 
   while (1) {
     I2Cdrv->SlaveReceive(&byte_rx, 1);

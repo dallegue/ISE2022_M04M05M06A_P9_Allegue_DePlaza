@@ -17,6 +17,7 @@
 #define LPC_SLAVE_I2C_ADDR         0x28
 
 #define SIG_TEMP              0x0001
+#define SIG_LED_BLUE_OFF      0x0002
 
 #define PORT_INT 0
 #define PIN_INT 23
@@ -45,6 +46,10 @@ static volatile uint32_t I2C_Event;
 void Thread (void const *argument);                             // thread function
 osThreadId tid_Thread;                                          // thread id
 osThreadDef (Thread, osPriorityNormal, 1, 0);                   // thread object
+
+void thread_led_blue_off (void const *argument);                             // thread function
+osThreadId tid_thread_led_blue_off;                                          // thread id
+osThreadDef (thread_led_blue_off, osPriorityNormal, 1, 0);                   // thread object
 
 /* Private functions -------------------------------------------------------- */
 
@@ -122,7 +127,7 @@ static void rgb_leds_config(void)
 
 static void comprobar_byte(uint8_t byte_tx, uint8_t byte_rx)
 {
-  if (byte_rx == ~byte_tx)
+  if (byte_rx == (uint8_t) ~byte_tx)
   {
     GPIO_PinWrite (PORT_RGB_LEDS, PIN_RGB_LED_GREEN, RGB_LED_ON);
     GPIO_PinWrite (PORT_RGB_LEDS, PIN_RGB_LED_RED, RGB_LED_OFF);
@@ -143,7 +148,8 @@ void EINT3_IRQHandler (void)
     /* Encender led azul */
     GPIO_PinWrite (PORT_RGB_LEDS, PIN_RGB_LED_BLUE, RGB_LED_ON);
     
-    /* Arrancar timer virtual de 1 segundo */
+    /* Arrancar "timer virtual" de 1 segundo */
+    osSignalSet (tid_thread_led_blue_off, SIG_LED_BLUE_OFF);
   
     /* Borra el flag de la interrupcion */
     LPC_GPIOINT->IO0IntClr = 1 << PIN_INT;
@@ -169,12 +175,28 @@ int Init_Thread (void) {
   return(0);
 }
 
+void thread_led_blue_off (void const *argument)
+{
+  
+  while(1)
+  {
+    osSignalWait (SIG_LED_BLUE_OFF, osWaitForever);
+    
+    osDelay(1000);
+    
+    /* Apagar led azul */
+    GPIO_PinWrite (PORT_RGB_LEDS, PIN_RGB_LED_BLUE, RGB_LED_OFF);
+  }
+}
+
 void Thread (void const *argument) {
   uint8_t byte_tx = 0;
   uint8_t byte_rx;
   
   rgb_leds_config();
   pin_int_config();
+  
+  tid_thread_led_blue_off = osThreadCreate(osThread (thread_led_blue_off), NULL);
 
   while (1) {
     osDelay(3000);
@@ -183,7 +205,7 @@ void Thread (void const *argument) {
     osSignalWait (SIG_TEMP, osWaitForever); 
     
     /* delay? */
-    //osDelay(500);
+    //osDelay(100);
     
     status = I2Cdrv->MasterReceive(LPC_SLAVE_I2C_ADDR, &byte_rx, 1, true);
     osSignalWait (SIG_TEMP, osWaitForever); 
