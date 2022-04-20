@@ -10,6 +10,7 @@
 
 extern bool LEDrun;
 extern char lcd_text[2][20+1];
+extern uint8_t ganancia;
 
 /* Public functions --------------------------------------------------------- */
 

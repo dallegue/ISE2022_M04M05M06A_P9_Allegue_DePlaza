@@ -38,6 +38,7 @@
 
 bool LEDrun;
 char lcd_text[2][20+1];
+uint8_t ganancia = 1;
 
 /* Private variables ---------------------------------------------------------*/
 
@@ -206,9 +207,6 @@ int main (void) {
 
   osThreadCreate (osThread(BlinkLed), NULL);
   osThreadCreate (osThread(thread_hora), NULL);
-  
-  /* dar control de lcd y leds a thread_hora */
-  pagina_hora_seleccionada = true;
   
   while(1) {
     net_main ();

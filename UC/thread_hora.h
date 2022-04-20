@@ -8,9 +8,8 @@
 /* Macros ------------------------------------------------------------------- */
 /* Public variables ----------------------------------------------------------*/
 
-extern bool pagina_hora_seleccionada;
-extern char lineaHora[20];
-extern char lineaFecha[20];
+extern char lineaFechaHora[20];
+extern char lineaGain[20];
 
 /* Public functions --------------------------------------------------------- */
 
