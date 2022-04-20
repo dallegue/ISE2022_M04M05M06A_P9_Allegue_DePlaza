@@ -39,6 +39,9 @@
 bool LEDrun;
 char lcd_text[2][20+1];
 uint8_t ganancia = 1;
+uint8_t overload_valor = 1;
+bool overload_int_enable = false;
+bool overload_status = false;
 
 /* Private variables ---------------------------------------------------------*/
 
@@ -199,13 +202,13 @@ int main (void) {
   net_initialize     ();
   LCD_SPI_startup();
   
-  escribir_FLASH_MAC_IP();
-  procesar_estado_leds();
-  escribir_FLASH_ADC(0x80);
+  //escribir_FLASH_MAC_IP();
+  //procesar_estado_leds();
+  //escribir_FLASH_ADC(0x80);
   
-  rgb_leds_config();
+  //rgb_leds_config();
 
-  osThreadCreate (osThread(BlinkLed), NULL);
+  //osThreadCreate (osThread(BlinkLed), NULL);
   osThreadCreate (osThread(thread_hora), NULL);
   
   while(1) {

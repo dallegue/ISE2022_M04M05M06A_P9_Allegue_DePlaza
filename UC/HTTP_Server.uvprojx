@@ -16,7 +16,7 @@
         <TargetCommonOption>
           <Device>LPC1758</Device>
           <Vendor>NXP</Vendor>
-          <PackID>Keil.LPC1700_DFP.2.5.0</PackID>
+          <PackID>Keil.LPC1700_DFP.2.7.0</PackID>
           <PackURL>http://www.keil.com/pack/</PackURL>
           <Cpu>IROM(0x00000000,0x80000) IRAM(0x10000000,0x8000) IRAM2(0x2007C000,0x8000) CPUTYPE("Cortex-M3") CLOCK(12000000) ELITTLE</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
@@ -479,56 +479,6 @@
               <FilePath>.\Web\pg_footer.inc</FilePath>
             </File>
             <File>
-              <FileName>ad.cgi</FileName>
-              <FileType>9</FileType>
-              <FilePath>.\Web\ad.cgi</FilePath>
-            </File>
-            <File>
-              <FileName>ad.cgx</FileName>
-              <FileType>9</FileType>
-              <FilePath>.\Web\ad.cgx</FilePath>
-            </File>
-            <File>
-              <FileName>buttons.cgi</FileName>
-              <FileType>9</FileType>
-              <FilePath>.\Web\buttons.cgi</FilePath>
-            </File>
-            <File>
-              <FileName>buttons.cgx</FileName>
-              <FileType>9</FileType>
-              <FilePath>.\Web\buttons.cgx</FilePath>
-            </File>
-            <File>
-              <FileName>language.cgi</FileName>
-              <FileType>9</FileType>
-              <FilePath>.\Web\language.cgi</FilePath>
-            </File>
-            <File>
-              <FileName>lcd.cgi</FileName>
-              <FileType>9</FileType>
-              <FilePath>.\Web\lcd.cgi</FilePath>
-            </File>
-            <File>
-              <FileName>leds.cgi</FileName>
-              <FileType>9</FileType>
-              <FilePath>.\Web\leds.cgi</FilePath>
-            </File>
-            <File>
-              <FileName>network.cgi</FileName>
-              <FileType>9</FileType>
-              <FilePath>.\Web\network.cgi</FilePath>
-            </File>
-            <File>
-              <FileName>system.cgi</FileName>
-              <FileType>9</FileType>
-              <FilePath>.\Web\system.cgi</FilePath>
-            </File>
-            <File>
-              <FileName>tcp.cgi</FileName>
-              <FileType>9</FileType>
-              <FilePath>.\Web\tcp.cgi</FilePath>
-            </File>
-            <File>
               <FileName>xml_http.js</FileName>
               <FileType>9</FileType>
               <FilePath>.\Web\xml_http.js</FilePath>
@@ -559,9 +509,14 @@
               <FilePath>.\Web\pabb.gif</FilePath>
             </File>
             <File>
-              <FileName>hora.cgi</FileName>
+              <FileName>ganancia.cgi</FileName>
               <FileType>9</FileType>
-              <FilePath>.\Web\hora.cgi</FilePath>
+              <FilePath>.\Web\ganancia.cgi</FilePath>
+            </File>
+            <File>
+              <FileName>overload.cgi</FileName>
+              <FileType>9</FileType>
+              <FilePath>.\Web\overload.cgi</FilePath>
             </File>
           </Files>
         </Group>
@@ -596,13 +551,13 @@
       <TargetName>LPC1768 Flash</TargetName>
       <ToolsetNumber>0x4</ToolsetNumber>
       <ToolsetName>ARM-ADS</ToolsetName>
-      <pCCUsed>5060960::V5.06 update 7 (build 960)::ARMCC</pCCUsed>
+      <pCCUsed>5060960::V5.06 update 7 (build 960)::.\ARMCC</pCCUsed>
       <uAC6>0</uAC6>
       <TargetOption>
         <TargetCommonOption>
           <Device>LPC1768</Device>
           <Vendor>NXP</Vendor>
-          <PackID>Keil.LPC1700_DFP.2.5.0</PackID>
+          <PackID>Keil.LPC1700_DFP.2.7.0</PackID>
           <PackURL>http://www.keil.com/pack/</PackURL>
           <Cpu>IROM(0x00000000,0x80000) IRAM(0x10000000,0x8000) IRAM2(0x2007C000,0x8000) CPUTYPE("Cortex-M3") CLOCK(12000000) ELITTLE</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
@@ -1065,56 +1020,6 @@
               <FilePath>.\Web\pg_footer.inc</FilePath>
             </File>
             <File>
-              <FileName>ad.cgi</FileName>
-              <FileType>9</FileType>
-              <FilePath>.\Web\ad.cgi</FilePath>
-            </File>
-            <File>
-              <FileName>ad.cgx</FileName>
-              <FileType>9</FileType>
-              <FilePath>.\Web\ad.cgx</FilePath>
-            </File>
-            <File>
-              <FileName>buttons.cgi</FileName>
-              <FileType>9</FileType>
-              <FilePath>.\Web\buttons.cgi</FilePath>
-            </File>
-            <File>
-              <FileName>buttons.cgx</FileName>
-              <FileType>9</FileType>
-              <FilePath>.\Web\buttons.cgx</FilePath>
-            </File>
-            <File>
-              <FileName>language.cgi</FileName>
-              <FileType>9</FileType>
-              <FilePath>.\Web\language.cgi</FilePath>
-            </File>
-            <File>
-              <FileName>lcd.cgi</FileName>
-              <FileType>9</FileType>
-              <FilePath>.\Web\lcd.cgi</FilePath>
-            </File>
-            <File>
-              <FileName>leds.cgi</FileName>
-              <FileType>9</FileType>
-              <FilePath>.\Web\leds.cgi</FilePath>
-            </File>
-            <File>
-              <FileName>network.cgi</FileName>
-              <FileType>9</FileType>
-              <FilePath>.\Web\network.cgi</FilePath>
-            </File>
-            <File>
-              <FileName>system.cgi</FileName>
-              <FileType>9</FileType>
-              <FilePath>.\Web\system.cgi</FilePath>
-            </File>
-            <File>
-              <FileName>tcp.cgi</FileName>
-              <FileType>9</FileType>
-              <FilePath>.\Web\tcp.cgi</FilePath>
-            </File>
-            <File>
               <FileName>xml_http.js</FileName>
               <FileType>9</FileType>
               <FilePath>.\Web\xml_http.js</FilePath>
@@ -1145,9 +1050,14 @@
               <FilePath>.\Web\pabb.gif</FilePath>
             </File>
             <File>
-              <FileName>hora.cgi</FileName>
+              <FileName>ganancia.cgi</FileName>
               <FileType>9</FileType>
-              <FilePath>.\Web\hora.cgi</FilePath>
+              <FilePath>.\Web\ganancia.cgi</FilePath>
+            </File>
+            <File>
+              <FileName>overload.cgi</FileName>
+              <FileType>9</FileType>
+              <FilePath>.\Web\overload.cgi</FilePath>
             </File>
           </Files>
         </Group>
@@ -1359,7 +1269,7 @@
       <file attr="config" category="header" condition="LPC1700 CMSIS Device" name="RTE_Driver\Config\RTE_Device.h" version="2.4.1">
         <instance index="0">RTE\Device\LPC1758\RTE_Device.h</instance>
         <component Cclass="Device" Cgroup="Startup" Cvendor="Keil" Cversion="1.0.0" condition="LPC17xx CMSIS Device ARMCC"/>
-        <package name="LPC1700_DFP" schemaVersion="1.2" url="http://www.keil.com/pack/" vendor="Keil" version="2.5.0"/>
+        <package name="LPC1700_DFP" schemaVersion="1.2" url="http://www.keil.com/pack/" vendor="Keil" version="2.7.0"/>
         <targetInfos>
           <targetInfo name="LPC1758 Flash"/>
         </targetInfos>
@@ -1367,7 +1277,7 @@
       <file attr="config" category="source" condition="LPC175x" name="Device\Source\ARM\startup_LPC17xx.s" version="1.0.0">
         <instance index="0">RTE\Device\LPC1758\startup_LPC17xx.s</instance>
         <component Cclass="Device" Cgroup="Startup" Cvendor="Keil" Cversion="1.0.0" condition="LPC17xx CMSIS Device ARMCC"/>
-        <package name="LPC1700_DFP" schemaVersion="1.2" url="http://www.keil.com/pack/" vendor="Keil" version="2.5.0"/>
+        <package name="LPC1700_DFP" schemaVersion="1.2" url="http://www.keil.com/pack/" vendor="Keil" version="2.7.0"/>
         <targetInfos>
           <targetInfo name="LPC1758 Flash"/>
         </targetInfos>
@@ -1375,7 +1285,7 @@
       <file attr="config" category="source" condition="LPC175x" name="Device\Source\system_LPC17xx.c" version="1.0.0">
         <instance index="0">RTE\Device\LPC1758\system_LPC17xx.c</instance>
         <component Cclass="Device" Cgroup="Startup" Cvendor="Keil" Cversion="1.0.0" condition="LPC17xx CMSIS Device ARMCC"/>
-        <package name="LPC1700_DFP" schemaVersion="1.2" url="http://www.keil.com/pack/" vendor="Keil" version="2.5.0"/>
+        <package name="LPC1700_DFP" schemaVersion="1.2" url="http://www.keil.com/pack/" vendor="Keil" version="2.7.0"/>
         <targetInfos>
           <targetInfo name="LPC1758 Flash"/>
         </targetInfos>
@@ -1383,7 +1293,7 @@
       <file attr="config" category="header" condition="LPC1700 CMSIS Device" name="RTE_Driver\Config\RTE_Device.h" version="2.4.1">
         <instance index="0">RTE\Device\LPC1768\RTE_Device.h</instance>
         <component Cclass="Device" Cgroup="Startup" Cvendor="Keil" Cversion="1.0.0" condition="LPC17xx CMSIS Device ARMCC"/>
-        <package name="LPC1700_DFP" schemaVersion="1.2" url="http://www.keil.com/pack/" vendor="Keil" version="2.5.0"/>
+        <package name="LPC1700_DFP" schemaVersion="1.2" url="http://www.keil.com/pack/" vendor="Keil" version="2.7.0"/>
         <targetInfos>
           <targetInfo name="LPC1768 Flash"/>
         </targetInfos>
@@ -1391,7 +1301,7 @@
       <file attr="config" category="source" condition="LPC176x" name="Device\Source\ARM\startup_LPC17xx.s" version="1.0.0">
         <instance index="0">RTE\Device\LPC1768\startup_LPC17xx.s</instance>
         <component Cclass="Device" Cgroup="Startup" Cvendor="Keil" Cversion="1.0.0" condition="LPC17xx CMSIS Device ARMCC"/>
-        <package name="LPC1700_DFP" schemaVersion="1.2" url="http://www.keil.com/pack/" vendor="Keil" version="2.5.0"/>
+        <package name="LPC1700_DFP" schemaVersion="1.2" url="http://www.keil.com/pack/" vendor="Keil" version="2.7.0"/>
         <targetInfos>
           <targetInfo name="LPC1768 Flash"/>
         </targetInfos>
@@ -1399,7 +1309,7 @@
       <file attr="config" category="source" condition="LPC176x" name="Device\Source\system_LPC17xx.c" version="1.0.0">
         <instance index="0">RTE\Device\LPC1768\system_LPC17xx.c</instance>
         <component Cclass="Device" Cgroup="Startup" Cvendor="Keil" Cversion="1.0.0" condition="LPC17xx CMSIS Device ARMCC"/>
-        <package name="LPC1700_DFP" schemaVersion="1.2" url="http://www.keil.com/pack/" vendor="Keil" version="2.5.0"/>
+        <package name="LPC1700_DFP" schemaVersion="1.2" url="http://www.keil.com/pack/" vendor="Keil" version="2.7.0"/>
         <targetInfos>
           <targetInfo name="LPC1768 Flash"/>
         </targetInfos>

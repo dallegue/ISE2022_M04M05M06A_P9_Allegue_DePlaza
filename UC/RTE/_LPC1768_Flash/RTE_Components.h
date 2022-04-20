@@ -33,7 +33,7 @@
 #define RTE_Network_Socket_TCP          /* Network Socket TCP */
 /* Keil.MDK-Pro Net_v6::Network:Socket:UDP:6.7.7 */
 #define RTE_Network_Socket_UDP          /* Network Socket UDP */
-/* Keil::CMSIS Driver:Ethernet MAC:2.11.0 */
+/* Keil::CMSIS Driver:Ethernet MAC:2.13.0 */
 #define RTE_Drivers_ETH_MAC0            /* Driver ETH_MAC0 */
 /* Keil::CMSIS Driver:Ethernet PHY:DP83848C:6.2.0 */
 #define RTE_Drivers_PHY_DP83848C        /* Driver PHY DP83848C */

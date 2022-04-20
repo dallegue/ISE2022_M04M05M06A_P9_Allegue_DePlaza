@@ -11,6 +11,9 @@
 extern bool LEDrun;
 extern char lcd_text[2][20+1];
 extern uint8_t ganancia;
+extern uint8_t overload_valor;
+extern bool overload_int_enable;
+extern bool overload_status;
 
 /* Public functions --------------------------------------------------------- */
 
