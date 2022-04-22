@@ -8,6 +8,7 @@
 
 #include "thread_i2c.h"
 #include "HTTP_Server.h"
+#include "flash.h"
 
 /* Macros --------------------------------------------------------------------*/
 
@@ -134,6 +135,7 @@ void thread_overload_off (void const *argument)
     osSignalWait (SIG_OVERLOAD_OFF, osWaitForever);
     
     overload_status = true;
+    escribir_FLASH_timestamp_overload();
     
     osDelay(250);
     

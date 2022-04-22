@@ -15,6 +15,7 @@
 
 #include "HTTP_Server.h"
 #include "thread_i2c.h"
+#include "flash.h"
 
 // My structure of CGI status variable.
 typedef struct {
@@ -148,6 +149,8 @@ void cgi_process_data (uint8_t code, const char *data, uint32_t len) {
     mensaje_tx = 0x00000000;
     mensaje_tx |= ganancia;
     osMessagePut(queue_i2c_id, mensaje_tx, osWaitForever);
+    
+    escribir_FLASH_timestamp_ganancia();
   }
   
   /* Si se ha modificado el valor de overload, se envia el valor nuevo por i2c a AGP */

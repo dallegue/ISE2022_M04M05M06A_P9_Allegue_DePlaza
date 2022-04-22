@@ -20,7 +20,7 @@
 
 /* Public variables ----------------------------------------------------------*/
 
-char lineaFechaHora[] = "00:00:00 00/00/00";
+char lineaFechaHora[] = "00/00/00 00:00:00";
 
 /* Private variables ---------------------------------------------------------*/
 
@@ -78,7 +78,7 @@ void thread_hora (void const *arg)
       
       RTCFullTime.SEC = SNTPFullTime.tm_sec;
       RTCFullTime.MIN = SNTPFullTime.tm_min;
-      RTCFullTime.HOUR = (SNTPFullTime.tm_hour == 23) ? 0 : SNTPFullTime.tm_hour + 1; /* GMT+1 */
+      RTCFullTime.HOUR = (SNTPFullTime.tm_hour == 23) ? 0 : SNTPFullTime.tm_hour + 2; /* GMT+1 */
       RTCFullTime.DOM = SNTPFullTime.tm_mday;
       RTCFullTime.MONTH = SNTPFullTime.tm_mon + 1; /* tm_mon es el mes de 0 a 11 */
       RTCFullTime.YEAR = SNTPFullTime.tm_year + 1900; /* tm_year son años desde 1900 */
@@ -86,7 +86,7 @@ void thread_hora (void const *arg)
       RTC_SetFullTime(&RTCFullTime);
     }
     
-    sprintf(lineaFechaHora, "%02d/%02d/%02d %02d:%02d:%02d", RTCFullTime.DOM, RTCFullTime.MONTH, RTCFullTime.YEAR, RTCFullTime.HOUR, RTCFullTime.MIN, RTCFullTime.SEC);
+    sprintf(lineaFechaHora, "%02d/%02d/%02d %02d:%02d:%02d", RTCFullTime.DOM, RTCFullTime.MONTH, (RTCFullTime.YEAR)%100, RTCFullTime.HOUR, RTCFullTime.MIN, RTCFullTime.SEC);
     sprintf(lineaGain, "Ganancia actual: %d", ganancia);
     
     print_lineas(lineaFechaHora, lineaGain);

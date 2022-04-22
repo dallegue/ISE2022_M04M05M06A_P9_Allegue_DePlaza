@@ -401,7 +401,7 @@
       <MemoryWindow1>
         <Mm>
           <WinNumber>1</WinNumber>
-          <SubType>0</SubType>
+          <SubType>8</SubType>
           <ItemText>0x30000</ItemText>
           <AccSizeX>0</AccSizeX>
         </Mm>
