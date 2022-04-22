@@ -14,6 +14,7 @@
 #include "rl_net_lib.h"
 
 #include "HTTP_Server.h"
+#include "thread_i2c.h"
 
 // My structure of CGI status variable.
 typedef struct {
@@ -41,6 +42,11 @@ void cgi_process_query (const char *qstr) {
 //            - 5 = the same as 4, but with more XML data to follow.
 void cgi_process_data (uint8_t code, const char *data, uint32_t len) {
   char var[40];
+  uint32_t mensaje_tx;
+  
+  uint8_t ganancia_anterior = ganancia;
+  bool overload_int_enable_anterior = overload_int_enable;
+  uint8_t overload_valor_anterior = overload_valor;
 
   if (code != 0) {
     // Ignore all other codes
@@ -82,14 +88,6 @@ void cgi_process_data (uint8_t code, const char *data, uint32_t len) {
       }
       
       /* control de overload */
-      else if (strcmp (var, "pg=overload") == 0)
-      {
-        overload_int_enable = false;
-      }
-      else if (strcmp (var, "overload_int=on") == 0)
-      {
-        overload_int_enable = true;
-      }
       else if (strcmp (var, "overload_sel=1") == 0)
       {
         overload_valor = 1;
@@ -130,8 +128,43 @@ void cgi_process_data (uint8_t code, const char *data, uint32_t len) {
       {
         overload_valor = 10;
       }
+      else if (strcmp (var, "pg=overload") == 0)
+      {
+        
+        overload_int_enable = false;
+      }
+      else if (strcmp (var, "overload_int=on") == 0)
+      {
+        overload_int_enable = true;
+      }
     }
   } while (data);
+  
+  /* Envio de datos por i2c */
+  
+  /* Si se ha modificado el valor de ganancia, se envia el valor nuevo por i2c a AGP */
+  if (ganancia_anterior != ganancia)
+  {
+    mensaje_tx = 0x00000000;
+    mensaje_tx |= ganancia;
+    osMessagePut(queue_i2c_id, mensaje_tx, osWaitForever);
+  }
+  
+  /* Si se ha modificado el valor de overload, se envia el valor nuevo por i2c a AGP */
+  if (overload_valor_anterior != overload_valor)
+  {
+    mensaje_tx = 0x00000100;
+    mensaje_tx |= overload_valor;
+    osMessagePut(queue_i2c_id, (uint32_t)mensaje_tx, osWaitForever);
+  }
+  
+  /* Si se ha modificado la habilitacion de interrupcion por overload, se envia el valor por i2c a AGP */
+  if (overload_int_enable_anterior != overload_int_enable)
+  {
+    mensaje_tx = 0x00000200;
+    mensaje_tx |= (uint8_t) overload_int_enable;
+    osMessagePut(queue_i2c_id, (uint32_t)mensaje_tx, osWaitForever);
+  }
 }
 
 // Generate dynamic web data from a script line.

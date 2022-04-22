@@ -7,11 +7,11 @@
 
 /* Macros ------------------------------------------------------------------- */
 
-#define LONGITUD_MAC 6
-#define LONGITUD_IP 4
-
-#define FLASH_LEDS_ROTATORIO (uint8_t) 0x00
-#define FLASH_LEDS_MANUAL (uint8_t) 0xf0
+//#define LONGITUD_MAC 6
+//#define LONGITUD_IP 4
+//
+//#define FLASH_LEDS_ROTATORIO (uint8_t) 0x00
+//#define FLASH_LEDS_MANUAL (uint8_t) 0xf0
 
 
 /* Public variables ----------------------------------------------------------*/

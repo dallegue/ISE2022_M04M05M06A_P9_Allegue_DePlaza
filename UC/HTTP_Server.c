@@ -16,12 +16,13 @@
 #include "HTTP_Server.h"
 #include "PIN_LPC17xx.h"
 #include "GPIO_LPC17xx.h"
+#include "Net_Config_ETH_0.h"
 
 #include "adc.h"
 #include "lcd.h"
 #include "thread_hora.h"
 #include "flash.h"
-#include "Net_Config_ETH_0.h"
+#include "thread_i2c.h"
 
 /* Macros --------------------------------------------------------------------*/
 
@@ -42,6 +43,7 @@ uint8_t ganancia = 1;
 uint8_t overload_valor = 1;
 bool overload_int_enable = false;
 bool overload_status = false;
+uint16_t v_out = 0;
 
 /* Private variables ---------------------------------------------------------*/
 
@@ -68,6 +70,9 @@ static int32_t LED_Initialize (void);
 
 osThreadDef(BlinkLed, osPriorityNormal, 1, 0);
 osThreadDef(thread_hora, osPriorityNormal, 1, 0);
+osThreadDef(thread_i2c, osPriorityNormal, 1, 0);
+
+osMessageQDef(queue_i2c, 4, uint32_t);
 
 /* Private functions -------------------------------------------------------- */
 
@@ -130,27 +135,6 @@ static void BlinkLed (void const *arg) {
   }
 }
 
-static void procesar_estado_leds (void)
-{
-  uint8_t estado_leds = leer_FLASH_LEDS();
-  
-  if (estado_leds == FLASH_LEDS_ROTATORIO)
-  {
-    LEDrun = true;
-  }
-  else
-  {
-    LED_SetOut(estado_leds);
-  }
-}
-
-static void rgb_leds_config(void)
-{
-    /* Configura pines como salida */
-    GPIO_SetDir (PORT_RGB_LEDS, PIN_RGB_LED_BLUE, GPIO_DIR_OUTPUT);
-    GPIO_PinWrite (PORT_RGB_LEDS, PIN_RGB_LED_BLUE, RGB_LED_OFF);
-}
-
 /* Public functions --------------------------------------------------------- */
 
 /* No se usa */
@@ -202,6 +186,8 @@ int main (void) {
   net_initialize     ();
   LCD_SPI_startup();
   
+  queue_i2c_id = osMessageCreate(osMessageQ(queue_i2c), NULL);
+  
   //escribir_FLASH_MAC_IP();
   //procesar_estado_leds();
   //escribir_FLASH_ADC(0x80);
@@ -210,6 +196,7 @@ int main (void) {
 
   //osThreadCreate (osThread(BlinkLed), NULL);
   osThreadCreate (osThread(thread_hora), NULL);
+  tid_thread_i2c = osThreadCreate (osThread(thread_i2c), NULL);
   
   while(1) {
     net_main ();

@@ -23,7 +23,7 @@ c b 5 <option %s>10</option></select></td></tr>
 t <tr><td><img src=pabb.gif>Habilitar/deshabilitar interrupcion por overload</td>
 c b 6 <td><input type=checkbox name=overload_int OnClick="submit();" %s></td></tr>
 t <tr><td><img src=pabb.gif>Estado de overload</td>
-c b 7 <td><input type="checkbox" disabled id="overload_estado" %s>
+c b 7 <td><input type="checkbox" id="overload_estado" %s disabled>
 t </td></tr></font></table>
 # Here begin button definitions
 t <p align=center>

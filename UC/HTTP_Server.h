@@ -5,6 +5,8 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+#include "cmsis_os.h"
+
 /* Macros ------------------------------------------------------------------- */
 /* Public variables ----------------------------------------------------------*/
 
@@ -14,6 +16,7 @@ extern uint8_t ganancia;
 extern uint8_t overload_valor;
 extern bool overload_int_enable;
 extern bool overload_status;
+extern uint16_t v_out;
 
 /* Public functions --------------------------------------------------------- */
 
