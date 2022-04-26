@@ -20,6 +20,12 @@
 #define PORT_INT 0
 #define PIN_INT 23
 
+/* Leds en pines 1.18 */
+#define PORT_LEDS 1
+#define PIN_LED1 18
+#define LED_ON 1
+#define LED_OFF !LED_ON
+
 /* Public variables ----------------------------------------------------------*/
 
 osMessageQId queue_i2c_id;
@@ -135,11 +141,13 @@ void thread_overload_off (void const *argument)
     osSignalWait (SIG_OVERLOAD_OFF, osWaitForever);
     
     overload_status = true;
+    GPIO_PinWrite (PORT_LEDS, PIN_LED1, LED_ON);
     escribir_FLASH_timestamp_overload();
     
     osDelay(250);
     
     overload_status = false;
+    GPIO_PinWrite (PORT_LEDS, PIN_LED1, LED_OFF);
   }
 }
 
@@ -153,6 +161,7 @@ void thread_i2c (void const *argument) {
   
   pin_int_config();
   init_i2c();
+  GPIO_SetDir (PORT_LEDS, PIN_LED1, GPIO_DIR_OUTPUT);
   
   tid_thread_overload_off = osThreadCreate(osThread (thread_overload_off), NULL);
 
@@ -170,7 +179,7 @@ void thread_i2c (void const *argument) {
         byte_tx[0] = direccion;
         byte_tx[1] = datos; // OJO IGUAL ES AL REVES
         
-        status = I2Cdrv->MasterTransmit(LPC_SLAVE_I2C_ADDR, byte_tx, 2, true);
+        status = I2Cdrv->MasterTransmit(LPC_SLAVE_I2C_ADDR, byte_tx, 2, false);
         osSignalWait (SIG_TEMP, osWaitForever);
       }
       

@@ -25,23 +25,13 @@
 #include "thread_i2c.h"
 
 /* Macros --------------------------------------------------------------------*/
-
-#define LED_COUNT (4)
-
-#define PORT_RGB_LEDS 2
-#define PIN_RGB_LED_RED 3
-#define PIN_RGB_LED_GREEN 2
-#define PIN_RGB_LED_BLUE 1
-#define RGB_LED_ON 0
-#define RGB_LED_OFF !RGB_LED_ON
-
 /* Public variables ----------------------------------------------------------*/
 
 bool LEDrun;
 char lcd_text[2][20+1];
 uint8_t ganancia = 1;
 uint8_t overload_valor = 1;
-bool overload_int_enable = false;
+bool overload_int_enable = true;
 bool overload_status = false;
 uint16_t v_out = 0;
 
@@ -57,7 +47,6 @@ osMessageQDef(queue_i2c, 4, uint32_t);
 /* Public functions --------------------------------------------------------- */
 
 int main (void) {
-  ADC_Initialize     ();
   net_initialize     ();
   LCD_SPI_startup();
   init_FLASH();
