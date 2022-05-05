@@ -198,7 +198,17 @@
         <Ww>
           <count>9</count>
           <WinNumber>1</WinNumber>
-          <ItemText>v_out</ItemText>
+          <ItemText>v_out,0x0A</ItemText>
+        </Ww>
+        <Ww>
+          <count>10</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>overload_adaptado,0x0A</ItemText>
+        </Ww>
+        <Ww>
+          <count>11</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>v_out_volts</ItemText>
         </Ww>
       </WatchWindow1>
       <Tracepoint>
