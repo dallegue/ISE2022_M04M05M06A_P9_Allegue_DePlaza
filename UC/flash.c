@@ -7,6 +7,7 @@
 #include "lpc17xx.h"
 #include "Net_Config_ETH_0.h"
 #include "thread_hora.h"
+#include "HTTP_Server.h"
 
 /* Macros --------------------------------------------------------------------*/
 
@@ -33,9 +34,13 @@ IAP iap_entry_flash_c = (IAP) IAP_LOCATION;
 #define BUFF_SIZE           256
 
 #define GANANCIA_OFFSET 0
-#define OVERLOAD_OFFSET 17
+#define OVERLOAD_OFFSET 21
 
 /* Public variables ----------------------------------------------------------*/
+
+char timestamp_ganancia_str[] = "00/00/00 00:00:00=ggg";
+char timestamp_overload_str[] = "00/00/00 00:00:00=ooo";
+
 /* Private variables ---------------------------------------------------------*/
 
 static uint32_t i;
@@ -226,8 +231,10 @@ static void escribir_sector(void)
   while(status != CMD_SUCCESS);
 }
 
-static void escribir_FLASH_timestamp (uint8_t addr_offset)
+static void escribir_FLASH_timestamp (uint8_t addr_offset, uint8_t valor)
 {
+  uint32_t i = 0;
+  
  /* lee los bytes que hay en la flash y los guarda en buffer_wr */
  for (i = 0;i < sizeof(buffer_wr);i++)
  {
@@ -242,6 +249,16 @@ static void escribir_FLASH_timestamp (uint8_t addr_offset)
    buffer_wr[i + addr_offset] = lineaFechaHora[i];
  }
  
+ buffer_wr[i++ + addr_offset] = '=';
+ 
+ /* Se guarda el valor (ganancia o overload) como numero en ascii (por eso el +48) */
+ /* centenas */
+ buffer_wr[i++ + addr_offset] = (valor / 100) % 10 + 48;
+ /* decenas */
+ buffer_wr[i++ + addr_offset] = (valor / 10) % 10 + 48;
+ /* unidades */
+ buffer_wr[i++ + addr_offset] = valor % 10 + 48;
+ 
  escribir_sector();
 }
 
@@ -249,12 +266,28 @@ static void escribir_FLASH_timestamp (uint8_t addr_offset)
 
 void escribir_FLASH_timestamp_ganancia ()
 {
-  escribir_FLASH_timestamp(GANANCIA_OFFSET);
+  escribir_FLASH_timestamp(GANANCIA_OFFSET, ganancia);
+}
+
+void leer_FLASH_timestamp_ganancia ()
+{
+  for (i = 0; i < strlen(timestamp_ganancia_str); i++)
+  {
+    timestamp_ganancia_str[i] = *(uint8_t*)(FLASH_PROG_AREA_START + GANANCIA_OFFSET+ i);
+  }
 }
 
 void escribir_FLASH_timestamp_overload ()
 {
-  escribir_FLASH_timestamp(OVERLOAD_OFFSET);
+  escribir_FLASH_timestamp(OVERLOAD_OFFSET, overload_valor);
+}
+
+void leer_FLASH_timestamp_overload ()
+{
+  for (i = 0; i < strlen(timestamp_overload_str); i++)
+  {
+    timestamp_overload_str[i] = *(uint8_t*)(FLASH_PROG_AREA_START + OVERLOAD_OFFSET+ i);
+  }
 }
 
 void init_FLASH ()

@@ -17,12 +17,11 @@
 #include "thread_i2c.h"
 #include "flash.h"
 
-// My structure of CGI status variable.
-typedef struct {
-  uint16_t xcnt;
-  uint16_t unused;
-} MY_BUF;
-#define MYBUF(p)        ((MY_BUF *)p)
+/* Private variables ---------------------------------------------------------*/
+
+static bool ver_timestamp_ganancia = true;
+
+/* Public functions --------------------------------------------------------- */
 
 // Process query string received by GET request.
 void cgi_process_query (const char *qstr) {
@@ -109,26 +108,6 @@ void cgi_process_data (uint8_t code, const char *data, uint32_t len) {
       {
         overload_valor = 5;
       }
-      else if (strcmp (var, "overload_sel=6") == 0)
-      {
-        overload_valor = 6;
-      }
-      else if (strcmp (var, "overload_sel=7") == 0)
-      {
-        overload_valor = 7;
-      }
-      else if (strcmp (var, "overload_sel=8") == 0)
-      {
-        overload_valor = 8;
-      }
-      else if (strcmp (var, "overload_sel=9") == 0)
-      {
-        overload_valor = 9;
-      }
-      else if (strcmp (var, "overload_sel=10") == 0)
-      {
-        overload_valor = 10;
-      }
       else if (strcmp (var, "pg=overload") == 0)
       {
         
@@ -137,6 +116,16 @@ void cgi_process_data (uint8_t code, const char *data, uint32_t len) {
       else if (strcmp (var, "overload_int=on") == 0)
       {
         overload_int_enable = true;
+      }
+      
+      /* visualizacion de timestamp de la flash */
+      else if (strcmp (var, "flash_sel=Ganancia") == 0)
+      {
+        ver_timestamp_ganancia = true;
+      }
+      else if (strcmp (var, "flash_sel=Overload") == 0)
+      {
+        ver_timestamp_ganancia = false;
       }
     }
   } while (data);
@@ -219,20 +208,7 @@ uint32_t cgi_script (const char *env, char *buf, uint32_t buflen, uint32_t *pcgi
         case '3':
           /* set overload linea 2 */
           len = sprintf (buf, &env[4], (overload_valor == 4) ? "selected" : "",
-                                       (overload_valor == 5) ? "selected" : "",
-                                       (overload_valor == 6) ? "selected" : "");
-          break;
-        
-        case '4':
-          /* set overload linea 3 */
-          len = sprintf (buf, &env[4], (overload_valor == 7) ? "selected" : "",
-                                       (overload_valor == 8) ? "selected" : "",
-                                       (overload_valor == 9) ? "selected" : "");
-          break;
-        
-        case '5':
-          /* set overload linea 4 */
-          len = sprintf (buf, &env[4], (overload_valor == 10) ? "selected" : "");
+                                       (overload_valor == 5) ? "selected" : "");
           break;
         
         case '6':
@@ -243,6 +219,32 @@ uint32_t cgi_script (const char *env, char *buf, uint32_t buflen, uint32_t *pcgi
         case '7':
           /* estado de overload */
           len = sprintf (buf, &env[4], (overload_status) ? "checked" : "");
+          break;
+      }
+      break;
+
+    case 'c':
+      switch (env[2])
+      {
+        case '1':
+          /* Comprobar que timestamp esta seleccionado */
+          len = sprintf (buf, &env[4], (ver_timestamp_ganancia) ? "selected" : "",
+                                       (!ver_timestamp_ganancia) ? "selected" : "");
+          break;
+        
+        case '2':
+          /* mostrar informacion del timestamp almacenado en la flash */
+        
+          if (ver_timestamp_ganancia)
+          {
+            leer_FLASH_timestamp_ganancia();
+          }
+          else
+          {
+            leer_FLASH_timestamp_overload();
+          }
+          
+          len = sprintf (buf, &env[4], (ver_timestamp_ganancia) ? timestamp_ganancia_str : timestamp_overload_str);
           break;
       }
       break;

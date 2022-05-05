@@ -177,7 +177,7 @@ void thread_i2c (void const *argument) {
       {
         /* Write */
         byte_tx[0] = direccion;
-        byte_tx[1] = datos; // OJO IGUAL ES AL REVES
+        byte_tx[1] = datos;
         
         status = I2Cdrv->MasterTransmit(LPC_SLAVE_I2C_ADDR, byte_tx, 2, false);
         osSignalWait (SIG_TEMP, osWaitForever);
@@ -194,7 +194,7 @@ void thread_i2c (void const *argument) {
       //  status = I2Cdrv->MasterReceive(LPC_SLAVE_I2C_ADDR, byte_rx, 2, true);
       //  osSignalWait (SIG_TEMP, osWaitForever);
       //  
-      //  v_out = (((uint16_t) byte_rx[1]) << 8) || byte_rx[0]; // OJO IGUAL ES AL REVES
+      //  v_out = (((uint16_t) byte_rx[1]) << 8) || byte_rx[0];
       //}
     }
     

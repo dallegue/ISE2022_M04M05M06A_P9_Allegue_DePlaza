@@ -17,9 +17,7 @@ c b 1 <tr><td><img src=pabb.gif>Overload actual</td><td><b>%d</b></td></tr>
 t <tr><td><img src=pabb.gif>Introducir overload</td>
 t <td><select name="overload_sel" onchange="submit();">
 c b 2 <option %s>1</option><option %s>2</option><option %s>3</option>
-c b 3 <option %s>4</option><option %s>5</option><option %s>6</option>
-c b 4 <option %s>7</option><option %s>8</option><option %s>9</option>
-c b 5 <option %s>10</option></select></td></tr>
+c b 3 <option %s>4</option><option %s>5</option></select></td></tr>
 t <tr><td><img src=pabb.gif>Habilitar/deshabilitar interrupcion por overload</td>
 c b 6 <td><input type=checkbox name=overload_int OnClick="submit();" %s></td></tr>
 t <tr><td><img src=pabb.gif>Estado de overload</td>

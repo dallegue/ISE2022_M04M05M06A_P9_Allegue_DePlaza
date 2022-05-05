@@ -36,7 +36,7 @@
 
 //     <o>Address byte 4 <0x00-0xff>
 //     <i>Default: 0xA2
-#define ETH0_MAC4               0xE0
+#define ETH0_MAC4               0xA2
 
 //     <o>Address byte 5 <0x00-0xff>
 //     <i>Default: 0x45
@@ -53,19 +53,19 @@
 //   <i>It is a Broadcast IP address.
 //     <o>Address byte 1 <0-255>
 //     <i>Default: 192
-#define ETH0_IP1                10
+#define ETH0_IP1                192
 
 //     <o>Address byte 2 <0-255>
 //     <i>Default: 168
-#define ETH0_IP2                48
+#define ETH0_IP2                168
 
 //     <o>Address byte 3 <0-255>
 //     <i>Default: 0
-#define ETH0_IP3                11
+#define ETH0_IP3                0
 
 //     <o>Address byte 4 <0-255>
 //     <i>Default: 100
-#define ETH0_IP4                109
+#define ETH0_IP4                116
 //   </h>
 
 //   <h>Subnet mask
@@ -76,11 +76,11 @@
 
 //     <o>Mask byte 2 <0-255>
 //     <i>Default: 255
-#define ETH0_MASK2              254
+#define ETH0_MASK2              255
 
 //     <o>Mask byte 3 <0-255>
 //     <i>Default: 255
-#define ETH0_MASK3              0
+#define ETH0_MASK3              255
 
 //     <o>Mask byte 4 <0-255>
 //     <i>Default: 0
@@ -91,11 +91,11 @@
 //   <i>Default Gateway IP Address
 //     <o>Address byte 1 <0-255>
 //     <i>Default: 192
-#define ETH0_GW1                10
+#define ETH0_GW1                192
 
 //     <o>Address byte 2 <0-255>
 //     <i>Default: 168
-#define ETH0_GW2                48
+#define ETH0_GW2                168
 
 //     <o>Address byte 3 <0-255>
 //     <i>Default: 0
@@ -110,19 +110,19 @@
 //   <i>Primary DNS Server IP Address
 //     <o>Address byte 1 <0-255>
 //     <i>Default: 194
-#define ETH0_PRI_DNS1           138
+#define ETH0_PRI_DNS1           192
 
 //     <o>Address byte 2 <0-255>
 //     <i>Default: 25
-#define ETH0_PRI_DNS2           100
+#define ETH0_PRI_DNS2           168
 
 //     <o>Address byte 3 <0-255>
 //     <i>Default: 2
-#define ETH0_PRI_DNS3           52
+#define ETH0_PRI_DNS3           0
 
 //     <o>Address byte 4 <0-255>
 //     <i>Default: 129
-#define ETH0_PRI_DNS4           102
+#define ETH0_PRI_DNS4           1
 //   </h>
 
 //   <h>Secondary DNS Server
