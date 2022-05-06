@@ -27,8 +27,8 @@
 uint8_t overload_valor = 1;
 bool overload_int_enable = true;
 uint16_t v_out = 0;
-float v_out_volts;
-float v_adc_volts;
+//float v_adc_volts;
+//float v_out_volts;
 
 /* Private variables ---------------------------------------------------------*/
 
@@ -49,7 +49,7 @@ static void realizar_medida()
   uint16_t overload_adaptado;
   
   v_out = AD_in(0);
-  //v_adc_volts = (v_out * 3.13f) / 4096;
+  //v_adc_volts = (v_out * 3.3f) / 4096;
   //v_out_volts = (v_adc_volts - 1.5) / 0.3;
   overload_adaptado = overload_valor * 409 + 2047;
   

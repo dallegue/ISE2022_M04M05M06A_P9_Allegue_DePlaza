@@ -16,7 +16,7 @@
         <TargetCommonOption>
           <Device>LPC1758</Device>
           <Vendor>NXP</Vendor>
-          <PackID>Keil.LPC1700_DFP.2.7.0</PackID>
+          <PackID>Keil.LPC1700_DFP.2.5.0</PackID>
           <PackURL>http://www.keil.com/pack/</PackURL>
           <Cpu>IROM(0x00000000,0x80000) IRAM(0x10000000,0x8000) IRAM2(0x2007C000,0x8000) CPUTYPE("Cortex-M3") CLOCK(12000000) ELITTLE</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
@@ -389,6 +389,11 @@
               <FilePath>.\HTTP_Server.c</FilePath>
             </File>
             <File>
+              <FileName>HTTP_Server.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\HTTP_Server.h</FilePath>
+            </File>
+            <File>
               <FileName>HTTP_Server_CGI.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\HTTP_Server_CGI.c</FilePath>
@@ -422,11 +427,6 @@
               <FileName>lcd.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\lcd.h</FilePath>
-            </File>
-            <File>
-              <FileName>HTTP_Server.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\HTTP_Server.h</FilePath>
             </File>
             <File>
               <FileName>RTC.c</FileName>
@@ -533,6 +533,11 @@
               <FileType>9</FileType>
               <FilePath>.\Web\overload.cgi</FilePath>
             </File>
+            <File>
+              <FileName>vo.cgi</FileName>
+              <FileType>9</FileType>
+              <FilePath>.\Web\vo.cgi</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -566,13 +571,13 @@
       <TargetName>LPC1768 Flash</TargetName>
       <ToolsetNumber>0x4</ToolsetNumber>
       <ToolsetName>ARM-ADS</ToolsetName>
-      <pCCUsed>5060960::V5.06 update 7 (build 960)::.\ARMCC</pCCUsed>
+      <pCCUsed>5060960::V5.06 update 7 (build 960)::ARMCC</pCCUsed>
       <uAC6>0</uAC6>
       <TargetOption>
         <TargetCommonOption>
           <Device>LPC1768</Device>
           <Vendor>NXP</Vendor>
-          <PackID>Keil.LPC1700_DFP.2.7.0</PackID>
+          <PackID>Keil.LPC1700_DFP.2.5.0</PackID>
           <PackURL>http://www.keil.com/pack/</PackURL>
           <Cpu>IROM(0x00000000,0x80000) IRAM(0x10000000,0x8000) IRAM2(0x2007C000,0x8000) CPUTYPE("Cortex-M3") CLOCK(12000000) ELITTLE</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
@@ -945,6 +950,11 @@
               <FilePath>.\HTTP_Server.c</FilePath>
             </File>
             <File>
+              <FileName>HTTP_Server.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\HTTP_Server.h</FilePath>
+            </File>
+            <File>
               <FileName>HTTP_Server_CGI.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\HTTP_Server_CGI.c</FilePath>
@@ -978,11 +988,6 @@
               <FileName>lcd.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\lcd.h</FilePath>
-            </File>
-            <File>
-              <FileName>HTTP_Server.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\HTTP_Server.h</FilePath>
             </File>
             <File>
               <FileName>RTC.c</FileName>
@@ -1088,6 +1093,11 @@
               <FileName>overload.cgi</FileName>
               <FileType>9</FileType>
               <FilePath>.\Web\overload.cgi</FilePath>
+            </File>
+            <File>
+              <FileName>vo.cgi</FileName>
+              <FileType>9</FileType>
+              <FilePath>.\Web\vo.cgi</FilePath>
             </File>
           </Files>
         </Group>
@@ -1313,7 +1323,7 @@
       <file attr="config" category="header" condition="LPC1700 CMSIS Device" name="RTE_Driver\Config\RTE_Device.h" version="2.4.1">
         <instance index="0">RTE\Device\LPC1758\RTE_Device.h</instance>
         <component Cclass="Device" Cgroup="Startup" Cvendor="Keil" Cversion="1.0.0" condition="LPC17xx CMSIS Device ARMCC"/>
-        <package name="LPC1700_DFP" schemaVersion="1.2" url="http://www.keil.com/pack/" vendor="Keil" version="2.7.0"/>
+        <package name="LPC1700_DFP" schemaVersion="1.2" url="http://www.keil.com/pack/" vendor="Keil" version="2.5.0"/>
         <targetInfos>
           <targetInfo name="LPC1758 Flash"/>
         </targetInfos>
@@ -1321,7 +1331,7 @@
       <file attr="config" category="source" condition="LPC175x" name="Device\Source\ARM\startup_LPC17xx.s" version="1.0.0">
         <instance index="0">RTE\Device\LPC1758\startup_LPC17xx.s</instance>
         <component Cclass="Device" Cgroup="Startup" Cvendor="Keil" Cversion="1.0.0" condition="LPC17xx CMSIS Device ARMCC"/>
-        <package name="LPC1700_DFP" schemaVersion="1.2" url="http://www.keil.com/pack/" vendor="Keil" version="2.7.0"/>
+        <package name="LPC1700_DFP" schemaVersion="1.2" url="http://www.keil.com/pack/" vendor="Keil" version="2.5.0"/>
         <targetInfos>
           <targetInfo name="LPC1758 Flash"/>
         </targetInfos>
@@ -1329,7 +1339,7 @@
       <file attr="config" category="source" condition="LPC175x" name="Device\Source\system_LPC17xx.c" version="1.0.0">
         <instance index="0">RTE\Device\LPC1758\system_LPC17xx.c</instance>
         <component Cclass="Device" Cgroup="Startup" Cvendor="Keil" Cversion="1.0.0" condition="LPC17xx CMSIS Device ARMCC"/>
-        <package name="LPC1700_DFP" schemaVersion="1.2" url="http://www.keil.com/pack/" vendor="Keil" version="2.7.0"/>
+        <package name="LPC1700_DFP" schemaVersion="1.2" url="http://www.keil.com/pack/" vendor="Keil" version="2.5.0"/>
         <targetInfos>
           <targetInfo name="LPC1758 Flash"/>
         </targetInfos>
@@ -1337,7 +1347,7 @@
       <file attr="config" category="header" condition="LPC1700 CMSIS Device" name="RTE_Driver\Config\RTE_Device.h" version="2.4.1">
         <instance index="0">RTE\Device\LPC1768\RTE_Device.h</instance>
         <component Cclass="Device" Cgroup="Startup" Cvendor="Keil" Cversion="1.0.0" condition="LPC17xx CMSIS Device ARMCC"/>
-        <package name="LPC1700_DFP" schemaVersion="1.2" url="http://www.keil.com/pack/" vendor="Keil" version="2.7.0"/>
+        <package name="LPC1700_DFP" schemaVersion="1.2" url="http://www.keil.com/pack/" vendor="Keil" version="2.5.0"/>
         <targetInfos>
           <targetInfo name="LPC1768 Flash"/>
         </targetInfos>
@@ -1345,7 +1355,7 @@
       <file attr="config" category="source" condition="LPC176x" name="Device\Source\ARM\startup_LPC17xx.s" version="1.0.0">
         <instance index="0">RTE\Device\LPC1768\startup_LPC17xx.s</instance>
         <component Cclass="Device" Cgroup="Startup" Cvendor="Keil" Cversion="1.0.0" condition="LPC17xx CMSIS Device ARMCC"/>
-        <package name="LPC1700_DFP" schemaVersion="1.2" url="http://www.keil.com/pack/" vendor="Keil" version="2.7.0"/>
+        <package name="LPC1700_DFP" schemaVersion="1.2" url="http://www.keil.com/pack/" vendor="Keil" version="2.5.0"/>
         <targetInfos>
           <targetInfo name="LPC1768 Flash"/>
         </targetInfos>
@@ -1353,7 +1363,7 @@
       <file attr="config" category="source" condition="LPC176x" name="Device\Source\system_LPC17xx.c" version="1.0.0">
         <instance index="0">RTE\Device\LPC1768\system_LPC17xx.c</instance>
         <component Cclass="Device" Cgroup="Startup" Cvendor="Keil" Cversion="1.0.0" condition="LPC17xx CMSIS Device ARMCC"/>
-        <package name="LPC1700_DFP" schemaVersion="1.2" url="http://www.keil.com/pack/" vendor="Keil" version="2.7.0"/>
+        <package name="LPC1700_DFP" schemaVersion="1.2" url="http://www.keil.com/pack/" vendor="Keil" version="2.5.0"/>
         <targetInfos>
           <targetInfo name="LPC1768 Flash"/>
         </targetInfos>

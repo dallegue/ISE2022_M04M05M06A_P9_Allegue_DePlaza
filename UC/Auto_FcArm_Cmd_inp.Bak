@@ -9,5 +9,6 @@ llblue.jpg,
 logo.gif,
 pabb.gif,
 ganancia.cgi,
-overload.cgi 
+overload.cgi,
+vo.cgi 
 TO Web.c RTE NOPRINT ROOT(Web)

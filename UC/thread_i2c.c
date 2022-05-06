@@ -33,8 +33,6 @@ osThreadId tid_thread_i2c;
 
 /* Private variables ---------------------------------------------------------*/
 
-static int32_t status = 0;
-
 /* I2C driver instance */
 extern ARM_DRIVER_I2C            Driver_I2C2;
 static ARM_DRIVER_I2C *I2Cdrv = &Driver_I2C2;
@@ -112,10 +110,10 @@ static void pin_int_config(void)
 }
 
 static void init_i2c(void){
-  status = I2Cdrv->Initialize (I2C_SignalEvent);
-  status = I2Cdrv->PowerControl (ARM_POWER_FULL);
-  status = I2Cdrv->Control      (ARM_I2C_BUS_SPEED, ARM_I2C_BUS_SPEED_STANDARD);
-  status = I2Cdrv->Control      (ARM_I2C_BUS_CLEAR, 0);
+  I2Cdrv->Initialize (I2C_SignalEvent);
+  I2Cdrv->PowerControl (ARM_POWER_FULL);
+  I2Cdrv->Control      (ARM_I2C_BUS_SPEED, ARM_I2C_BUS_SPEED_STANDARD);
+  I2Cdrv->Control      (ARM_I2C_BUS_CLEAR, 0);
 }
 
 /* Public functions --------------------------------------------------------- */
@@ -124,7 +122,6 @@ void EINT3_IRQHandler (void)
 {
   if (LPC_GPIOINT->IO0IntStatR & 1 << PIN_INT)
   {
-    
     /* Arrancar "timer virtual" de 0.25 segundo */
     osSignalSet (tid_thread_overload_off, SIG_OVERLOAD_OFF);
   
@@ -179,23 +176,23 @@ void thread_i2c (void const *argument) {
         byte_tx[0] = direccion;
         byte_tx[1] = datos;
         
-        status = I2Cdrv->MasterTransmit(LPC_SLAVE_I2C_ADDR, byte_tx, 2, false);
+        I2Cdrv->MasterTransmit(LPC_SLAVE_I2C_ADDR, byte_tx, 2, false);
         osSignalWait (SIG_TEMP, osWaitForever);
       }
       
       /* Apartado opcional, lectura de Vo */
-      //else if (direccion == 0x03)
-      //{
-      //  /* Write direccion a leer */
-      //  status = I2Cdrv->MasterTransmit(LPC_SLAVE_I2C_ADDR, &direccion, 1, true);
-      //  osSignalWait (SIG_TEMP, osWaitForever);
-      //  
-      //  /* Read */
-      //  status = I2Cdrv->MasterReceive(LPC_SLAVE_I2C_ADDR, byte_rx, 2, true);
-      //  osSignalWait (SIG_TEMP, osWaitForever);
-      //  
-      //  v_out = (((uint16_t) byte_rx[1]) << 8) || byte_rx[0];
-      //}
+      else if (direccion == 0x03)
+      {
+        /* Write direccion a leer */
+        I2Cdrv->MasterTransmit(LPC_SLAVE_I2C_ADDR, &direccion, 1, true);
+        osSignalWait (SIG_TEMP, osWaitForever);
+        
+        /* Read */
+        I2Cdrv->MasterReceive(LPC_SLAVE_I2C_ADDR, byte_rx, 2, true);
+        osSignalWait (SIG_TEMP, osWaitForever);
+        
+        v_out = (((uint16_t) byte_rx[0]) << 8) | byte_rx[1];
+      }
     }
     
     osThreadYield ();

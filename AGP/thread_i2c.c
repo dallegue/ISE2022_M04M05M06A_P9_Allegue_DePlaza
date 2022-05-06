@@ -100,13 +100,11 @@ static void I2C_SignalEvent_Slave (uint32_t event) {
 
 static void init_i2c(void)
 {
-  int32_t status = 0;
-  
-  status = I2Cdrv->Initialize (I2C_SignalEvent_Slave);
-  status = I2Cdrv->PowerControl (ARM_POWER_FULL);
-  status = I2Cdrv->Control (ARM_I2C_OWN_ADDRESS, 0x28);
-  status = I2Cdrv->Control (ARM_I2C_BUS_SPEED, ARM_I2C_BUS_SPEED_STANDARD);
-  status = I2Cdrv->Control (ARM_I2C_BUS_CLEAR, 0);
+  I2Cdrv->Initialize (I2C_SignalEvent_Slave);
+  I2Cdrv->PowerControl (ARM_POWER_FULL);
+  I2Cdrv->Control (ARM_I2C_OWN_ADDRESS, 0x28);
+  I2Cdrv->Control (ARM_I2C_BUS_SPEED, ARM_I2C_BUS_SPEED_STANDARD);
+  I2Cdrv->Control (ARM_I2C_BUS_CLEAR, 0);
 }
 
 static void set_sel(uint8_t sel)
@@ -156,6 +154,17 @@ static void set_ganancia(uint8_t ganancia)
   set_sel(sel);
 }
 
+static void enviar_vo (void)
+{
+  uint8_t bytes_tx  [2];
+  
+  bytes_tx[0] = (uint8_t) (v_out >> 8);
+  bytes_tx[1] = (uint8_t) v_out;
+  
+  I2Cdrv->SlaveTransmit(bytes_tx, 2);
+  osSignalWait (SIG_TEMP, osWaitForever);
+}
+
 static void procesar_rx (void)
 {
   switch (byte_rx[0])
@@ -171,12 +180,14 @@ static void procesar_rx (void)
     case 0x02:
       overload_int_enable = byte_rx[1];
       break;
+    
+    case 0x03:
+      enviar_vo();
+      break;
   }
 }
 
 static void thread_i2c (void const *argument) {
-//  uint8_t byte_tx;
-  
   init_i2c();
   
   /* señales para seleccion de ganancia */

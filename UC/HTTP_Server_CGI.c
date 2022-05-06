@@ -127,6 +127,16 @@ void cgi_process_data (uint8_t code, const char *data, uint32_t len) {
       {
         ver_timestamp_ganancia = false;
       }
+      
+      /* obtencion de vo */
+      else if (strcmp (var, "pg=vo") == 0)
+      {
+        mensaje_tx = 0x00000300;
+        osMessagePut(queue_i2c_id, (uint32_t)mensaje_tx, osWaitForever);
+        
+        /* esperar a obtener la medida */
+        osDelay(50);
+      }
     }
   } while (data);
   
@@ -190,6 +200,7 @@ uint32_t cgi_script (const char *env, char *buf, uint32_t buflen, uint32_t *pcgi
       }
       break;
 
+    /* overload.cgi */
     case 'b':
       switch (env[2])
       {
@@ -223,6 +234,7 @@ uint32_t cgi_script (const char *env, char *buf, uint32_t buflen, uint32_t *pcgi
       }
       break;
 
+    /* flash.cgi */
     case 'c':
       switch (env[2])
       {
@@ -245,6 +257,22 @@ uint32_t cgi_script (const char *env, char *buf, uint32_t buflen, uint32_t *pcgi
           }
           
           len = sprintf (buf, &env[4], (ver_timestamp_ganancia) ? timestamp_ganancia_str : timestamp_overload_str);
+          break;
+      }
+      break;
+      
+    /* vo.cgi */
+    case 'd':
+      switch (env[2])
+      {
+        case '1':
+          /* valor de vo en palabra digital */
+          len = sprintf (buf, &env[4], v_out, v_out);
+          break;
+        
+        case '2':
+          /* valor de vo en voltios */
+          len = sprintf (buf, &env[4], (((v_out * 3.3f) / 4096) - 1.5) / 0.3);
           break;
       }
       break;
