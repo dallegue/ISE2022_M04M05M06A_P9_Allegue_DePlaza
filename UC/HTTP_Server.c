@@ -18,7 +18,6 @@
 #include "GPIO_LPC17xx.h"
 #include "Net_Config_ETH_0.h"
 
-#include "adc.h"
 #include "lcd.h"
 #include "thread_hora.h"
 #include "flash.h"
@@ -27,7 +26,6 @@
 /* Macros --------------------------------------------------------------------*/
 /* Public variables ----------------------------------------------------------*/
 
-bool LEDrun;
 char lcd_text[2][20+1];
 uint8_t ganancia = 1;
 uint8_t overload_valor = 1;

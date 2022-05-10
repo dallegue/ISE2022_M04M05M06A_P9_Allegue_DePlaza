@@ -184,11 +184,11 @@ void thread_i2c (void const *argument) {
       else if (direccion == 0x03)
       {
         /* Write direccion a leer */
-        I2Cdrv->MasterTransmit(LPC_SLAVE_I2C_ADDR, &direccion, 1, true);
+        I2Cdrv->MasterTransmit(LPC_SLAVE_I2C_ADDR, &direccion, 1, false);
         osSignalWait (SIG_TEMP, osWaitForever);
         
         /* Read */
-        I2Cdrv->MasterReceive(LPC_SLAVE_I2C_ADDR, byte_rx, 2, true);
+        I2Cdrv->MasterReceive(LPC_SLAVE_I2C_ADDR, byte_rx, 2, false);
         osSignalWait (SIG_TEMP, osWaitForever);
         
         v_out = (((uint16_t) byte_rx[0]) << 8) | byte_rx[1];

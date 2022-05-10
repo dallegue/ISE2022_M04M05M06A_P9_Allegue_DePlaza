@@ -46,16 +46,18 @@ osThreadDef (thread_medida, osPriorityNormal, 1, 0);
 
 static void realizar_medida()
 {
-  uint16_t overload_adaptado;
+  uint16_t overload_adaptado_positivo;
+  uint16_t overload_adaptado_negativo;
   
   v_out = AD_in(0);
   //v_adc_volts = (v_out * 3.3f) / 4096;
   //v_out_volts = (v_adc_volts - 1.5) / 0.3;
-  overload_adaptado = overload_valor * 409 + 2047;
+  overload_adaptado_positivo = overload_valor * 372 + 1861;
+  overload_adaptado_negativo = 3723 - overload_adaptado_positivo;
   
   if (overload_int_enable && 
-    ((v_out >= 2047 && v_out > overload_adaptado) ||
-    (v_out < 2047 && v_out < overload_adaptado)))
+    ((v_out >= 1861 && v_out > overload_adaptado_positivo) ||
+    (v_out < 1861 && v_out < overload_adaptado_negativo)))
   {
     GPIO_PinWrite (PORT_INT, PIN_INT, INT_ON);
     GPIO_PinWrite (PORT_LEDS, PIN_LED1, LED_ON);

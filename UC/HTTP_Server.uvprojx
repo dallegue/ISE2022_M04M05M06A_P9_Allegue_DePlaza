@@ -409,16 +409,6 @@
               <FilePath>.\Arial12x12.h</FilePath>
             </File>
             <File>
-              <FileName>adc.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\adc.c</FilePath>
-            </File>
-            <File>
-              <FileName>adc.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\adc.h</FilePath>
-            </File>
-            <File>
               <FileName>lcd.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\lcd.c</FilePath>
@@ -968,16 +958,6 @@
               <FileName>Arial12x12.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\Arial12x12.h</FilePath>
-            </File>
-            <File>
-              <FileName>adc.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\adc.c</FilePath>
-            </File>
-            <File>
-              <FileName>adc.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\adc.h</FilePath>
             </File>
             <File>
               <FileName>lcd.c</FileName>
